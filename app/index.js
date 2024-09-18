@@ -5,7 +5,6 @@ const index = () => {
     <View style={styles.container}>
             {/* Animals Box */}
             <TouchableOpacity style={styles.box} onPress={()=>{
-                  // <Redirect href="/(tabs)/Animal" />
                   router.push('/Animals/Animal')
             }}>
                 <Text style={styles.boxText}>Animals</Text>

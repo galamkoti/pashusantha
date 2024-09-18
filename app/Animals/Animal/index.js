@@ -1,117 +1,110 @@
-import React from 'react';
-import { View, StyleSheet, FlatList, Alert } from 'react-native';
-import CropCategory from '../../Components/Crops/CropCategory';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, FlatList, Alert, ActivityIndicator, Text, RefreshControl } from 'react-native';
 import PostCard from '../../Components/Crops/CropsPostCard';
-
-const crops = [
-  { id: '1', name: 'Buffalo', image: require('../../../assets/animal/buffalo.jpg') },
-  { id: '2', name: 'Cow', image: require('../../../assets/animal/cow.jpg') },
-  { id: '3', name: 'Goat', image: require('../../../assets/animal/goat.jpg') },
-  { id: '4', name: 'Sheep', image: require('../../../assets/animal/sheep.jpg') },
-  { id: '5', name: 'Hen', image: require('../../../assets/animal/chicken.jpg') },
-  { id: '6', name: 'Bull', image: require('../../../assets/animal/farmer.jpg') },
-];
-
-const posts = [
-  {
-    id: 1,
-    category: 'Buffalo',
-    distance: 3.2,
-    datePosted: '2024-08-20',
-    image: require('../../../assets/animal/buffalo.jpg'),
-    userName: 'Farmer John',
-    phoneNumber: '6309065662',
-  },
-  {
-    id: 2,
-    category: 'Cow',
-    distance: 10.5,
-    datePosted: '2024-08-18',
-    image: require('../../../assets/animal/cow.jpg'),
-    userName: 'Farmer Emma',
-    phoneNumber: '5559876543',
-  },
-  {
-    id: 3,
-    category: 'Goat',
-    distance: 7.8,
-    datePosted: '2024-08-22',
-    image:require('../../../assets/animal/goat.jpg'),
-    userName: 'Farmer Raj',
-    phoneNumber: '5553456789',
-  },
-  {
-    id: 4,
-    category: 'Sheep',
-    distance: 12.4,
-    datePosted: '2024-08-21',
-    image:require('../../../assets/animal/sheep.jpg'),
-    userName: 'Farmer Lisa',
-    phoneNumber: '5551237890',
-  },
-  {
-    id: 5,
-    category: 'Hen',
-    distance: 5.0,
-    datePosted: '2024-08-19',
-    image: require('../../../assets/animal/chicken.jpg') ,
-    userName: 'Farmer Ahmed',
-    phoneNumber: '5552345678',
-  },
-  {
-    id: 6,
-    category: 'Bull',
-    distance: 7.0,
-    datePosted: '2024-08-19',
-    image: require('../../../assets/animal/farmer.jpg') ,
-    userName: 'Farmer Koti',
-    phoneNumber: '55523456477',
-  },
-];
+import axios from 'axios';
 
 // Render function for PostCard
-const renderItem = ({ item }) => (
-  <PostCard
-    category={item.category}
-    distance={item.distance}
-    datePosted={item.datePosted}
-    image={item.image}
-    userName={item.userName}
-    onCallPress={() => handleCallPress(item.phoneNumber)}
-  />
-);
+const renderItem = ({ item }) => {
+  const createdAt = item.createdAt?.$date?.$numberLong || Date.now(); // Fallback to current time if undefined
+  const imageUrl = item.images?.[0] || 'https://via.placeholder.com/200'; // Fallback image if not available
+  const phoneNumber = item.phone.toString() || 'phone number not available'; // Fallback if phone is not available
 
+  return (
+    <PostCard
+      category={item.animalType || 'Unknown'}
+      distance={item.distance || 'N/A'} // Handle distance gracefully
+      datePosted={item.createdAt} // Convert timestamp to a readable format
+      image={imageUrl}
+      userName={item.user || 'Anonymous'}
+      description={item.description}
+      breed={item.breed}
+      onCallPress={() => handleCallPress(phoneNumber)}
+      onPostPressed={()=> handlePostPress()}
+    />
+  );
+};
+const handlePostPress =()=>{
+  Alert.alert("Clicked On Post")
+}
 // Handle Call Button Press
-const handleCallPress = (phoneNumber) => {
-  Alert.alert('Calling', phoneNumber);
+const handleCallPress = (phone) => {
+  Alert.alert('Calling', phone);
 };
 
-// Render function for Categories
-const renderCategoryList = () => (
-  <View style={styles.categoryContainer}>
-    <FlatList
-      data={crops}
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => (
-        <CropCategory image={item.image} title={item.name} />
-      )}
-    />
-  </View>
-);
-
 const Index = () => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);   // Current page number
+  const [totalPages, setTotalPages] = useState(1);  // Total number of pages
+  const [isRefreshing, setIsRefreshing] = useState(false);  // Refreshing state for pull-to-refresh
+
+  // Fetch data function (handles both initial fetch and pagination)
+  const fetchAnimalPostsData = async (pageNumber = 1, isRefreshing = false) => {
+    if (loading && !isRefreshing) return; // Prevent multiple calls at once unless it's a refresh
+    setLoading(true);
+
+    try {
+      const response = await axios.get(`https://pashupanta-backend-production.up.railway.app/api/animal?page=${pageNumber}`);
+      const { data: fetchedData, totalPages: serverTotalPages } = response.data;
+
+      if (pageNumber === 1) {
+        setData(fetchedData); // If it's the first page or a refresh, replace existing posts
+      } else {
+        setData((prevData) => [...prevData, ...fetchedData]); // Otherwise, append new posts
+      }
+      
+      setTotalPages(serverTotalPages); // Update total pages from the server
+      setPage(pageNumber);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+      if (isRefreshing) setIsRefreshing(false); // Reset refreshing state
+    }
+  };
+
+  // Fetch initial data on component mount
+  useEffect(() => {
+    fetchAnimalPostsData();
+  }, []);
+
+  // Load more data when the user reaches the end of the list
+  const loadMorePosts = () => {
+    if (page < totalPages && !loading) {
+      fetchAnimalPostsData(page + 1);
+    }
+  };
+
+  // Refresh the data (pull-to-refresh)
+  const refreshPosts = async () => {
+    setIsRefreshing(true);
+    await fetchAnimalPostsData(1, true); // Reset to page 1 and refresh
+  };
+
+  // Render footer loading indicator for pagination
+  const renderFooter = () => {
+    if (!loading) return null;
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  };
+
+  if (loading && page === 1) return <ActivityIndicator size="large" color="#0000ff" />; // Show loading indicator only for initial load
+  if (error) return <Text>Error: {error.message}</Text>;
+
   return (
     <View style={styles.mainContainer}>
-      {/* Combined Category and Post List */}
       <FlatList
-        data={posts}
+        data={data}
         showsVerticalScrollIndicator={false}
-        ListHeaderComponent={renderCategoryList}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item._id?.$oid || item.id} // Fallback key if _id is missing
         contentContainerStyle={styles.postContainer}
+        onEndReached={loadMorePosts} // Pagination
+        onEndReachedThreshold={0.9} // Trigger when the list is 90% from the bottom
+        ListFooterComponent={renderFooter} // Show loading spinner at the bottom when loading more
+        refreshControl={
+          <RefreshControl refreshing={isRefreshing} onRefresh={refreshPosts} /> // Pull-to-refresh
+        }
       />
     </View>
   );
@@ -121,10 +114,6 @@ const Index = () => {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
-  categoryContainer: {
-    paddingVertical: 5,
     backgroundColor: '#fff',
   },
   postContainer: {

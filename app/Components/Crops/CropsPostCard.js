@@ -1,32 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity,Pressable, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { translation } from '../Language/translations';
 import { getSelectedLangFromAsync } from '../Language/languageStorage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const PostCard = ({ category, distance, datePosted, image, userName, onCallPress }) => {
-  const [languageIndex, setLanguageIndex] = useState(0); // Default to English
+const PostCard = ({ category, breed, distance, datePosted, image, userName, description, onCallPress , onPostPressed }) => {
+  const [languageIndex, setLanguageIndex] = useState(0);
 
   useEffect(() => {
-    fetchLanguageIndex()
+    fetchLanguageIndex();
   }, []);
 
   const fetchLanguageIndex = async () => {
-    console.log(AsyncStorage.getItem('LANGUAGE_VIKRAI'));
     const index = await getSelectedLangFromAsync();
     if (index !== null) {
       setLanguageIndex(index);
     }
   };
 
+  const formattedDate = new Date(datePosted).toLocaleDateString(); // Convert datePosted to readable format
+
   return (
-    <View style={styles.card}>
+    <Pressable style={styles.card} onPress={onPostPressed}>
       {/* Category and Distance */}
       <View style={styles.header}>
-        <Text style={styles.category}>{category}</Text>
+        <View style={styles.headerRowContainer}>
+          <Text style={styles.category}>{category}</Text>
+          <Text style={styles.category}>  ({breed})</Text>
+        </View>
         <Text style={styles.distance}>
-          {distance} km{' '}
+          {distance ? `${distance} km` : 'N/A'}{' '}
           {languageIndex === 0 ? translation[2].English
             : languageIndex === 1 ? translation[2].Hindi
             : languageIndex === 2 ? translation[2].Telugu
@@ -39,15 +43,15 @@ const PostCard = ({ category, distance, datePosted, image, userName, onCallPress
       </View>
 
       {/* Single Image Display */}
-      <Image source={image} style={styles.image} />
+      <Image source={{ uri: image }} style={styles.image} />
 
       {/* User Details and Call Option */}
       <View style={styles.footer}>
         <View>
-          <Text style={styles.userName}>{userName}</Text>
-          <Text style={styles.datePosted}>Posted on {datePosted}</Text>
+          <Text style={styles.userName}>{description}</Text>
+          <Text style={styles.datePosted}>Posted on {formattedDate}</Text>
         </View>
-        <View style={styles.callHeartConatiner}>
+        <View style={styles.callHeartContainer}>
           <TouchableOpacity onPress={onCallPress} style={styles.callButton}>
             <Ionicons name="call" size={24} color="white" />
           </TouchableOpacity>
@@ -61,7 +65,7 @@ const PostCard = ({ category, distance, datePosted, image, userName, onCallPress
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 };
 
@@ -90,8 +94,8 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: 250, // Adjust based on how large you want the image
-    resizeMode: 'cover', // This ensures the image covers the area nicely
+    height: 250,
+    resizeMode: 'cover',
   },
   footer: {
     flexDirection: 'row',
@@ -120,9 +124,13 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginLeft: 5,
   },
-  callHeartConatiner: {
+  callHeartContainer: {
     flexDirection: 'row',
   },
+  headerRowContainer:{
+    justifyContent:"space-around",
+    flexDirection:"row"
+  }
 });
 
 export default PostCard;
