@@ -43,9 +43,9 @@ const Index = () => {
   const fetchAnimalPostsData = async (pageNumber = 1, isRefreshing = false) => {
     if (loading && !isRefreshing) return; // Prevent multiple calls at once unless it's a refresh
     setLoading(true);
-
+    const animalKind="AnimalPost";
     try {
-      const response = await axios.get(`https://pashupanta-backend-production.up.railway.app/api/animal?page=${pageNumber}`);
+      const response = await axios.get(`http://192.168.0.110:5000/api/posts?page=${pageNumber}&kind=${animalKind}`);
       const { data: fetchedData, totalPages: serverTotalPages } = response.data;
 
       if (pageNumber === 1) {
