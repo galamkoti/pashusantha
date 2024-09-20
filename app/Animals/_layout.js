@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import { MaterialCommunityIcons, Feather, MaterialIcons } from '@expo/vector-icons';
-import { StyleSheet, TouchableOpacity ,View } from 'react-native';
+import { Image, Pressable, StyleSheet, TouchableOpacity ,View } from 'react-native';
+import { useLanguage } from '../context/LanguageContext';
 
 const CustomTabBarButton =({children,onPress}) =>(
     <TouchableOpacity style={{
@@ -23,13 +24,20 @@ const CustomTabBarButton =({children,onPress}) =>(
 )
 
 export default () => {
+    const {translations} = useLanguage();
     return (
         <Tabs initialRouteName='Animal' screenOptions={{
             }}>
             <Tabs.Screen name="Animal" options={{
-                title: 'Animals',
+                headerShown:false,
+                title: translations.animals||'Animals',
                 tabBarIcon: ({ color, size }) => 
-                  <MaterialCommunityIcons name="cow" size={size} color={color} />
+                  <MaterialCommunityIcons name="cow" size={size} color={color} />,
+                headerRight:()=>(
+                    <Pressable style={styles.languageIcon}>
+                        <Image source={{uri:"https://as1.ftcdn.net/v2/jpg/07/02/65/48/1000_F_702654842_gEiQbEkLKZv8aRvcfdQrawkDbfSvMspg.jpg"}} style={{flex:1}}/>
+                    </Pressable>
+                )
             }} />
             <Tabs.Screen name="Subscription" options={{
                 title: 'Subscribe',
@@ -37,7 +45,7 @@ export default () => {
                   <MaterialCommunityIcons name="cow" size={size} color={color} />
             }} />
             <Tabs.Screen name="Sell" options={{
-                title: 'Sell',
+                title: translations.sell||'Sell',
                 tabBarIcon: ({ color, size }) => (
                     <View style={[styles.sellIconContainer, { backgroundColor: '#3c6ef2' }]}>
                       <Feather name="plus-circle" size={size + 15} color="#fff" />
@@ -83,4 +91,12 @@ const styles=StyleSheet.create({
         borderColor: '#fff',
         borderWidth: 4
       },
+      languageIcon:{
+        flex:1,
+        height:40,
+        width:70,
+        resizeMode:"center",
+        marginRight:20,
+        marginBottom:5
+      }
 })

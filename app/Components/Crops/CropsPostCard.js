@@ -1,23 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity,Pressable, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { translation } from '../Language/translations';
-import { getSelectedLangFromAsync } from '../Language/languageStorage';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useLanguage } from '../../context/LanguageContext';
 
 const PostCard = ({ category, breed, distance, datePosted, image, userName, description, onCallPress , onPostPressed }) => {
-  const [languageIndex, setLanguageIndex] = useState(0);
-
-  useEffect(() => {
-    fetchLanguageIndex();
-  }, []);
-
-  const fetchLanguageIndex = async () => {
-    const index = await getSelectedLangFromAsync();
-    if (index !== null) {
-      setLanguageIndex(index);
-    }
-  };
+  const {translations} = useLanguage();
 
   const formattedDate = new Date(datePosted).toLocaleDateString(); // Convert datePosted to readable format
 
@@ -30,15 +17,7 @@ const PostCard = ({ category, breed, distance, datePosted, image, userName, desc
           <Text style={styles.category}>  ({breed})</Text>
         </View>
         <Text style={styles.distance}>
-          {distance ? `${distance} km` : 'N/A'}{' '}
-          {languageIndex === 0 ? translation[2].English
-            : languageIndex === 1 ? translation[2].Hindi
-            : languageIndex === 2 ? translation[2].Telugu
-            : languageIndex === 3 ? translation[2].Tamil
-            : languageIndex === 4 ? translation[2].Malayalam
-            : languageIndex === 5 ? translation[2].Kannada
-            : languageIndex === 6 ? translation[2].Punjabi
-            : null}
+          {translations.buy|| "Buy"}
         </Text>
       </View>
 

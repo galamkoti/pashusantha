@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import LanguageModal from '../../Components/Language/LanguageModal';
-import { translation } from '../../Components/Language/translations';
-import { saveSelectedLangInAsync,getSelectedLangFromAsync } from '../../Components/Language/languageStorage';
+
 // Mocked data for useful links or options like favorites, etc.
 const usefulLinks = [
     { id: '1', title: 'Favorites', icon: require('../../../assets/sell/crops.png') },
@@ -12,11 +9,7 @@ const usefulLinks = [
 ];
 
 const index = () => {
-    const [langmodalVisible,setLangModalVisible]=useState(false);
-    const [selectedLangIndex,setSelectedLangIndex]=useState(0);
-    // const saveSelectedLangInAsync = async (index) => {
-    //     await saveSelectedLangInAsync(index);
-    // };
+
     
     return (
         <View style={styles.container}>
@@ -38,44 +31,6 @@ const index = () => {
                 <Text style={styles.detail}>johndoe@example.com</Text>
                 <Text style={styles.detail}>+1 234 567 890</Text>
             </View>
-
-            {/* Language Change Option */}
-            <TouchableOpacity style={styles.languageButton} onPress={()=>{
-                setLangModalVisible(!langmodalVisible);
-            }}>
-                <Text style={styles.languageButtonText}>
-                    {selectedLangIndex==0?translation[0].English
-                    :selectedLangIndex==1?translation[0].Hindi
-                    :selectedLangIndex==2?translation[0].Telugu
-                    :selectedLangIndex==3?translation[0].Tamil
-                    :selectedLangIndex==4?translation[0].Malayalam
-                    :selectedLangIndex==5?translation[0].Kannada
-                    :selectedLangIndex==6?translation[0].Punjabi
-                    :null}
-                </Text>
-            </TouchableOpacity>
-            <LanguageModal 
-            langmodalVisible={langmodalVisible}
-             setLangModalVisible={setLangModalVisible}
-             onSelectLang={(languageIndex)=>{
-                setSelectedLangIndex(languageIndex);
-                saveSelectedLangInAsync(languageIndex);
-             }}
-             
-             />
-            <TouchableOpacity style={styles.linkItem}>
-                        <Image source={usefulLinks[0].icon} style={styles.linkIcon} />
-                        <Text style={styles.linkText}>
-                        {selectedLangIndex==0?translation[1].English
-                        :selectedLangIndex==1?translation[1].Hindi
-                        :selectedLangIndex==2?translation[1].Telugu
-                        :selectedLangIndex==3?translation[1].Tamil
-                        :selectedLangIndex==4?translation[1].Malayalam
-                        :selectedLangIndex==5?translation[1].Kannada
-                        :selectedLangIndex==6?translation[1].Punjabi
-                        :null}
-                        </Text>
-                    </TouchableOpacity>
             {/* Useful Links or Options */}
             <FlatList
                 data={usefulLinks}

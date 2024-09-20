@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, Alert, ActivityIndicator, Text, RefreshControl } from 'react-native';
+import { View, StyleSheet, FlatList, Alert, ActivityIndicator, Text, RefreshControl, Button } from 'react-native';
 import PostCard from '../../Components/Crops/CropsPostCard';
 import axios from 'axios';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import {useLanguage,LanguageProvider} from '../../context/LanguageContext';
 
 // Render function for PostCard
 const renderItem = ({ item }) => {
@@ -38,6 +40,7 @@ const Index = () => {
   const [page, setPage] = useState(1);   // Current page number
   const [totalPages, setTotalPages] = useState(1);  // Total number of pages
   const [isRefreshing, setIsRefreshing] = useState(false);  // Refreshing state for pull-to-refresh
+  const { language, translations, languageLoading, changeLanguage } = useLanguage();
 
   // Fetch data function (handles both initial fetch and pagination)
   const fetchAnimalPostsData = async (pageNumber = 1, isRefreshing = false) => {
@@ -92,7 +95,16 @@ const Index = () => {
   if (error) return <Text>Error: {error.message}</Text>;
 
   return (
-    <View style={styles.mainContainer}>
+    <SafeAreaView style={styles.mainContainer}>
+      <View style={styles.topContainer}>
+        <Text>Kphb,Hyderabad</Text>
+        <Button title="Telugu" onPress={() => changeLanguage('te')} />
+        <Button title="Tamil" onPress={() => changeLanguage('ta')} />
+        <Text style={styles.text}>{translations.buy || 'Buy'}</Text>
+      <Text style={styles.text}>{translations.sell || 'Sell'}</Text>
+      <Text style={styles.text}>{translations.animals || 'Animals'}</Text>
+      <Text style={styles.text}>{translations.crops || 'Crops'}</Text>
+      </View>
       <FlatList
         data={data}
         showsVerticalScrollIndicator={false}
@@ -106,7 +118,7 @@ const Index = () => {
           <RefreshControl refreshing={isRefreshing} onRefresh={refreshPosts} /> // Pull-to-refresh
         }
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -120,6 +132,10 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#f2f2f2',
   },
+  topContainer:{
+    flexDirection:"row",
+    justifyContent:"space-between"
+  }
 });
 
 export default Index;
