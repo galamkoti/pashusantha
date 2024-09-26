@@ -45,7 +45,7 @@ const Index = () => {
     setLoading(true);
 
     try {
-      const response = await axios.get(`http://192.168.0.110:5000/api/posts/myposts/user/66e39cccba6f2e4bff489da9?page=${pageNumber}`);
+      const response = await axios.get(`https://pashupanta-backend-production.up.railway.app/api/posts/myposts/user/66e39cccba6f2e4bff489da9?page=${pageNumber}`);
       const { data: fetchedData, totalPages: serverTotalPages } = response.data;
       console.log("myposts",data)
       if (pageNumber === 1) {

@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext, Children } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
@@ -6,7 +6,7 @@ const LanguageContext = createContext();
 
 const fetchTranslationsFromAPI = async (lang) => {
     try {
-        const response = await axios.get(`http://192.168.0.110:5000/language?lng=${lang}`);
+        const response = await axios.get(`https://pashupanta-backend-production.up.railway.app/language?lng=${lang}`);
         const data = response.data;
         return data;
     } catch (error) {

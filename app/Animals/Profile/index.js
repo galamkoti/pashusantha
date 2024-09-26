@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useContext, useState } from 'react';
+import {router} from 'expo-router'
+import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, Alert } from 'react-native';
+import { useUserData } from '../../context/UserContext'
 
 // Mocked data for useful links or options like favorites, etc.
 const usefulLinks = [
@@ -9,7 +12,9 @@ const usefulLinks = [
 ];
 
 const index = () => {
-
+    // const [userInfo,setUserInfo]=useState({});
+    const {user,logoutUser}=useUserData();
+    console.log("userInfo in profile",user)
     
     return (
         <View style={styles.container}>
@@ -26,10 +31,10 @@ const index = () => {
 
             {/* Farmer's Basic Details */}
             <View style={styles.detailsContainer}>
-                <Text style={styles.name}>John Doe</Text>
+                <Text style={styles.nameOfUser}>{user.name}</Text>
                 <Text style={styles.detail}>Farmer</Text>
-                <Text style={styles.detail}>johndoe@example.com</Text>
-                <Text style={styles.detail}>+1 234 567 890</Text>
+                <Text style={styles.detail}>{user.email}</Text>
+                <Text style={styles.detail}>{user.phone}</Text>
             </View>
             {/* Useful Links or Options */}
             <FlatList
@@ -43,6 +48,9 @@ const index = () => {
                 keyExtractor={(item) => item.id}
                 style={styles.linksContainer}
             />
+            <TouchableOpacity style={styles.logOutButton} onPress={logoutUser}>
+                <Text>LogOut</Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -69,7 +77,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 20,
     },
-    name: {
+    nameOfUser: {
         fontSize: 24,
         fontWeight: 'bold',
         color: '#333',
@@ -111,4 +119,12 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#333',
     },
+    logOutButton:{
+        width:"90%",
+        backgroundColor:"orange",
+        marginBottom:40,
+        padding:10,
+        justifyContent:"center",
+        alignItems:"center"
+    }
 });

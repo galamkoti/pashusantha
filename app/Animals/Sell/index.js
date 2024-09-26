@@ -1,10 +1,9 @@
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity , SafeAreaView,Modal } from 'react-native';
 import React from 'react';
 import { router} from 'expo-router';
+import {useLanguage} from '../../context/LanguageContext'
 
-const categoriesToSell = [
-  { id: '1', name: 'Sell Animals', image: require('../../../assets/sell/animal.jpg') ,form:'animal' },
-];
+
 
 const renderSellCategory = ({ item }) => {
   return (
@@ -18,6 +17,10 @@ const renderSellCategory = ({ item }) => {
 };
 
 const index = () => {
+  const {  translations } = useLanguage();
+  const categoriesToSell = [
+    { id: '1', name:translations.sell_animal||'Sell Animals', image: require('../../../assets/sell/animal.jpg') ,form:'animal' },
+  ];
   return (
     <SafeAreaView style={styles.mainContainer}>
       <Text style={styles.title}>Pick a Category</Text>

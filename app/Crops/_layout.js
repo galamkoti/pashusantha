@@ -28,6 +28,8 @@ export default () => {
             }}>
             <Tabs.Screen name="Crops" options={{
                 title: 'Crops',
+                headerShadowVisible:true,
+                headerShown:false,
                 tabBarIcon: ({size,color}) => 
                   <MaterialCommunityIcons name="flower-tulip-outline" size={size} color={color} />
             }} />

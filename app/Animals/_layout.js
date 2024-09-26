@@ -7,15 +7,14 @@ const CustomTabBarButton =({children,onPress}) =>(
     <TouchableOpacity style={{
         top:-20,
         justifyContent:'center',
-        alignItems:'center',
-        
+        alignItems:'center'
     }}
     onPress={onPress}
     >
         <View style={{
             width:70,
             height:70,
-            borderRadius:35
+            borderRadius:35,
         }}>
             {children}
         </View>
@@ -27,17 +26,17 @@ export default () => {
     const {translations} = useLanguage();
     return (
         <Tabs initialRouteName='Animal' screenOptions={{
+            tabBarLabelStyle: {
+                fontSize: 13,  
+                fontWeight: 'bold',  
+                marginTop:7
+              },
             }}>
             <Tabs.Screen name="Animal" options={{
                 headerShown:false,
                 title: translations.animals||'Animals',
                 tabBarIcon: ({ color, size }) => 
-                  <MaterialCommunityIcons name="cow" size={size} color={color} />,
-                headerRight:()=>(
-                    <Pressable style={styles.languageIcon}>
-                        <Image source={{uri:"https://as1.ftcdn.net/v2/jpg/07/02/65/48/1000_F_702654842_gEiQbEkLKZv8aRvcfdQrawkDbfSvMspg.jpg"}} style={{flex:1}}/>
-                    </Pressable>
-                )
+                  <MaterialCommunityIcons name="cow" size={size} color={color} />
             }} />
             <Tabs.Screen name="Subscription" options={{
                 title: 'Subscribe',
@@ -63,7 +62,7 @@ export default () => {
                   <MaterialIcons name="favorite-border" size={size} color={color} />
             }} />
             <Tabs.Screen name="Profile" options={{
-                title: 'Profile',
+                title: translations.profile|| 'Profile',
                 tabBarIcon: ({ color, size }) => 
                   <MaterialIcons name="person-pin" size={size} color={color} />
             }} />

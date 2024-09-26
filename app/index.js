@@ -1,10 +1,16 @@
-import { Redirect, router} from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {  router} from 'expo-router'
+import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useUserData } from './context/UserContext';
 const index = () => {
+    const {user}=useUserData();
   return (
     <View style={styles.container}>
-            {/* Animals Box */}
-            <TouchableOpacity style={styles.box} onPress={()=>{
+        {user?
+        <>
+        {/* Animals Box */}
+        <TouchableOpacity style={styles.box} onPress={()=>{
                   router.push('/Animals/Animal')
             }}>
                 <Text style={styles.boxText}>Animals</Text>
@@ -16,6 +22,13 @@ const index = () => {
             }}>
                 <Text style={styles.boxText}>Crops</Text>
             </TouchableOpacity>
+        </>:
+            <TouchableOpacity style={styles.box} onPress={()=>{
+                  router.push('/auth/login')
+            }}>
+                <Text style={styles.boxText}>Login</Text>
+            </TouchableOpacity>
+        }
         </View>
   )
 }
@@ -27,7 +40,7 @@ const styles = StyleSheet.create({
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      flexDirection: 'row',
+      flexDirection: 'column',
       margin: 20,
   },
   box: {
