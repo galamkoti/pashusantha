@@ -1,37 +1,49 @@
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity , SafeAreaView,Modal } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity , SafeAreaView,Modal, Linking } from 'react-native';
 import React from 'react';
 import { router} from 'expo-router';
 import {useLanguage} from '../../context/LanguageContext'
+import { FontAwesome } from '@expo/vector-icons';
 
 
-
-const renderSellCategory = ({ item }) => {
-  return (
-    <TouchableOpacity style={styles.categoryContainer} onPress={()=>{
-      router.push({pathname:`/forms/${item.form}`})
-    }}>
-      <Image source={item.image} style={styles.image} />
-      <Text style={styles.title}>{item.name}</Text>
-    </TouchableOpacity>
-  );
-};
+// const renderSellCategory = ({ item }) => {
+//   return (
+    
+//   );
+// };
 
 const index = () => {
   const {  translations } = useLanguage();
-  const categoriesToSell = [
-    { id: '1', name:translations.sell_animal||'Sell Animals', image: require('../../../assets/sell/animal.jpg') ,form:'animal' },
-  ];
+  const handleWhatsApp = () => {
+    // Redirect to WhatsApp with pre-filled message
+    let url = `whatsapp://send?phone=${7981787912}&text=${translations.sell_on_whatsapp||"Hello, I want to sell my cattle"}`;
+    Linking.openURL(url).catch(() => {
+        alert('Make sure WhatsApp is installed on your device');
+    });
+};
+  // const categoriesToSell = [
+  //   { id: '1', name:, image:  ,form:'animal' },
+  // ];
   return (
     <SafeAreaView style={styles.mainContainer}>
-      <Text style={styles.title}>Pick a Category</Text>
-      <FlatList
+      {/* <Text style={styles.title}>Pick a Category</Text> */}
+      {/* <FlatList
         data={categoriesToSell}
         renderItem={renderSellCategory}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         // numColumns={2}
         // columnWrapperStyle={styles.row}
-      />
+      /> */}
+      <TouchableOpacity style={styles.categoryContainer} onPress={()=>{
+      router.push({pathname:`/forms/animal`})
+    }}>
+      <Image source={require('../../../assets/sell/animal.jpg')} style={styles.image} />
+      <Text style={styles.title}>{translations.sell_animal||'Sell Animals'}</Text>
+    </TouchableOpacity>
+      <TouchableOpacity style={styles.categoryContainer} onPress={handleWhatsApp}>
+                <FontAwesome name="whatsapp" size={100} color="green" />
+                <Text style={styles.title}>Contact via WhatsApp</Text>
+            </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -52,7 +64,7 @@ const styles = StyleSheet.create({
     margin: 10,
     borderRadius: 10,
     backgroundColor: '#ffffff',
-    padding: 15,
+    padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
@@ -62,7 +74,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   image: {
-    height: 200,
+    height: 180,
     width: '100%',
     borderRadius: 10,
     marginBottom: 10,

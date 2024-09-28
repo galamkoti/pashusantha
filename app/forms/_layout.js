@@ -10,6 +10,9 @@ const FormsLayout =() =>{
             <Stack.Screen name='crops' options={{headerTitle : 'Crops Form' ,headerLeft:()=>(
                 <Ionicons name="arrow-back" size={30} color="black" onPress={()=> router.back()} style={{marginRight: 20}}/>
             )}}/>
+            <Stack.Screen name='animalPostDetails' options={{headerTitle : 'Details Page' ,headerLeft:()=>(
+                <Ionicons name="arrow-back" size={30} color="black" onPress={()=> router.back()} style={{marginRight: 20}}/>
+            )}}/>
         </Stack>
     );
 }

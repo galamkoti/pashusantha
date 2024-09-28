@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLanguage } from '../../context/LanguageContext';
 import { useLocation } from '../../context/LocationContext';
 import { Picker } from '@react-native-picker/picker';
+import {router} from 'expo-router'
 import Entypo from '@expo/vector-icons/Entypo';
 import LocationModal from '../../Components/Location/locationModal';
 
@@ -25,13 +26,14 @@ const renderItem = ({ item }) => {
       description={item.description}
       breed={item.breed}
       onCallPress={() => handleCallPress(phoneNumber)}
-      onPostPressed={() => handlePostPress()}
+      onPostPressed={() => handlePostPress(item)}
     />
   );
 };
 
-const handlePostPress = () => {
-  Alert.alert('Clicked On Post');
+const handlePostPress = (item) => {
+  console.log("pressed on post",item)
+  router.push({pathname:`forms/animalPostDetails`,params:item})
 };
 
 // Handle Call Button Press

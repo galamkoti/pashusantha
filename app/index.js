@@ -5,6 +5,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useUserData } from './context/UserContext';
 const index = () => {
     const {user}=useUserData();
+    console.log("user in app index",user);
   return (
     <View style={styles.container}>
         {user?

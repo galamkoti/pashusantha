@@ -5,9 +5,7 @@ import { router } from "expo-router";
 const  userContext=createContext();
 
 export const UserProvider= ({children})=>{
-    const [user,setUser]=useState({
-
-      });
+    const [user,setUser]=useState(null);
     const [userLoading,setUserLoading]=useState(true);
     const loginUser=async(userData)=>{
         try{
