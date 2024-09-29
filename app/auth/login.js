@@ -15,7 +15,7 @@ const PhoneAuthScreen = () => {
   // Send OTP to the user's phone number
   const sendOTP = async () => {
     try {
-      const response = await axios.post('http://192.168.0.110:5000/sms/send-otp', {
+      const response = await axios.post('https://pashupanta-backend-production.up.railway.app/sms/send-otp', {
         phoneNumber: `+91${phoneNumber}` // Assuming Indian users, so prefix with +91
       });
       if (response.data.success) {
@@ -32,7 +32,7 @@ const PhoneAuthScreen = () => {
   // Verify the OTP entered by the user
   const verifyOTP = async () => {
     try {
-      const response = await axios.post('http://192.168.0.110:5000/sms/verify-otp', {
+      const response = await axios.post('https://pashupanta-backend-production.up.railway.app/sms/verify-otp', {
         phoneNumber: `${phoneNumber}`, // Assuming Indian numbers
         code: code
       });

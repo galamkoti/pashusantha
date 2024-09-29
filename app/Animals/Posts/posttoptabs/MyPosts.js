@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList, Alert, ActivityIndicator, Text, RefreshControl } from 'react-native';
 import PostCard from '../../../Components/Crops/CropsPostCard';
 import axios from 'axios';
+import { useUserData } from '../../../context/UserContext';
 
 // Render function for PostCard
 const renderItem = ({ item }) => {
@@ -38,6 +39,8 @@ const Index = () => {
   const [page, setPage] = useState(1);   // Current page number
   const [totalPages, setTotalPages] = useState(1);  // Total number of pages
   const [isRefreshing, setIsRefreshing] = useState(false);  // Refreshing state for pull-to-refresh
+  const {user}=useUserData();
+  console.log("user in myposts",user._id)
 
   // Fetch data function (handles both initial fetch and pagination)
   const fetchAnimalPostsData = async (pageNumber = 1, isRefreshing = false) => {
@@ -45,9 +48,9 @@ const Index = () => {
     setLoading(true);
 
     try {
-      const response = await axios.get(`https://pashupanta-backend-production.up.railway.app/api/posts/myposts/user/66e39cccba6f2e4bff489da9?page=${pageNumber}`);
+      const response = await axios.get(`http://192.168.0.110:5000/api/posts/myposts/user/${user._id}?page=${pageNumber}`);
       const { data: fetchedData, totalPages: serverTotalPages } = response.data;
-      console.log("myposts",data)
+      console.log("myposts",fetchedData)
       if (pageNumber === 1) {
         setData(fetchedData); // If it's the first page or a refresh, replace existing posts
       } else {

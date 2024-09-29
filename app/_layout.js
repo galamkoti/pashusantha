@@ -15,6 +15,7 @@ const StackLayout = () => {
                     <Stack.Screen name='Crops' options={{ headerShown: false }} />
                     <Stack.Screen name='forms' options={{ headerShown: false }} />
                     <Stack.Screen name='auth' options={{headerShown:false}} />
+                    <Stack.Screen name='common' options={{headerShown:false}} />
                 </Stack>
                 </SavePostProvider>
             </LocationProvider>

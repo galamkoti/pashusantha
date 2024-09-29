@@ -33,7 +33,7 @@ const renderItem = ({ item }) => {
 
 const handlePostPress = (item) => {
   console.log("pressed on post",item)
-  router.push({pathname:`forms/animalPostDetails`,params:item})
+  router.push({pathname:`common/animalPostDetails`,params:item})
 };
 
 // Handle Call Button Press
@@ -52,6 +52,10 @@ const Index = () => {
   const { location, locationName, fetchLocation } = useLocation();
   const [selectedLanguage, setSelectedLanguage] = useState(null); // Keep track of selected language
   const [isLocationModalVisible, setLocationModalVisible] = useState(false);
+  const [posts,setPosts]=useState([]);
+  const lat = 78.3906107;    // Replace with user's latitude
+  const lon = 17.5269614;    // Replace with user's longitude
+  const radius = 100; 
 
   const toggleLocationModal = () => {
     setLocationModalVisible(!isLocationModalVisible);
@@ -85,6 +89,27 @@ const Index = () => {
   // Fetch initial data on component mount
   useEffect(() => {
     fetchAnimalPostsData();
+  }, []);
+
+  const fetchNearbyPosts = async () => {
+    if (!location) return;
+
+    // setLoading(true);
+    try {
+      const response = await axios.get(`http://localhost:5000/api/posts/nearby?lat=${lat}&lon=${lon}&radius=${radius}`);
+      console.log("nearby:",response.data)
+      setPosts(response.data.data);
+    } catch (error) {
+      setError(error);
+    } finally {
+      // setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (location) {
+      fetchNearbyPosts(); // Fetch posts after location is obtained
+    }
   }, []);
 
   // Load more data when the user reaches the end of the list
@@ -192,6 +217,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 5,
+    justifyContent:'center',
   },
   locationContainer: {
     flexDirection: 'row',

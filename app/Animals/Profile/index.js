@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useContext, useState } from 'react';
 import {router} from 'expo-router'
-import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, LottieView } from 'react-native';
 import { useUserData } from '../../context/UserContext'
 
 // Mocked data for useful links or options like favorites, etc.
@@ -19,16 +19,8 @@ const index = () => {
     return (
         <View style={styles.container}>
             {/* Animated Farmer Picture */}
-          
-            {/* <View style={styles.animationContainer}>
-                <LottieView 
-                    source={require('../../../assets/animations/farmer.json')} 
-                    autoPlay 
-                    loop
-                    style={styles.animation}
-                />
-            </View> */}
-
+            <Image style={styles.profilePicture}
+            source={{uri:"https://media.istockphoto.com/id/1330214182/photo/happy-smiling-indian-farmer-counting-currency-notes-inside-the-greenhouse-or-polyhouse.jpg?s=1024x1024&w=is&k=20&c=22iXxp6H-_uD7p1Cgjusk65k26ndUlz6bV2okbA1Lkg="}}/>
             {/* Farmer's Basic Details */}
             <View style={styles.detailsContainer}>
                 <Text style={styles.nameOfUser}>{user.name}</Text>
@@ -126,5 +118,10 @@ const styles = StyleSheet.create({
         padding:10,
         justifyContent:"center",
         alignItems:"center"
+    },
+    profilePicture:{
+        borderRadius:50,
+        height:100,
+        width:100
     }
 });

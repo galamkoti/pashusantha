@@ -1,5 +1,5 @@
-import { Tabs } from 'expo-router';
-import { MaterialCommunityIcons, Feather, MaterialIcons } from '@expo/vector-icons';
+import { router, Tabs } from 'expo-router';
+import { MaterialCommunityIcons, Feather, MaterialIcons ,Ionicons} from '@expo/vector-icons';
 import { Image, Pressable, StyleSheet, TouchableOpacity ,View } from 'react-native';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -33,7 +33,9 @@ export default () => {
               },
             }}>
             <Tabs.Screen name="Animal" options={{
-                headerShown:false,
+                headerLeft:()=>(
+                    <Ionicons name="arrow-back" size={30} color="black" onPress={()=> router.replace("/")} />),
+                // headerShown:false,
                 title: translations.animals||'Animals',
                 tabBarIcon: ({ color, size }) => 
                   <MaterialCommunityIcons name="cow" size={size} color={color} />

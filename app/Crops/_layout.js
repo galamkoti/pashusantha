@@ -1,5 +1,5 @@
-import { Tabs } from 'expo-router';
-import { MaterialCommunityIcons, Feather, MaterialIcons } from '@expo/vector-icons';
+import { router, Tabs } from 'expo-router';
+import { MaterialCommunityIcons, Feather, MaterialIcons,Ionicons } from '@expo/vector-icons';
 import { StyleSheet, TouchableOpacity ,View } from 'react-native';
 
 const CustomTabBarButton =({children,onPress}) =>(
@@ -27,9 +27,11 @@ export default () => {
         <Tabs initialRouteName='Crops' screenOptions={{
             }}>
             <Tabs.Screen name="Crops" options={{
+                 headerLeft:()=>(
+                    <Ionicons name="arrow-back" size={30} color="black" onPress={()=> router.replace("/")} />),
                 title: 'Crops',
                 headerShadowVisible:true,
-                headerShown:false,
+                // headerShown:false,
                 tabBarIcon: ({size,color}) => 
                   <MaterialCommunityIcons name="flower-tulip-outline" size={size} color={color} />
             }} />

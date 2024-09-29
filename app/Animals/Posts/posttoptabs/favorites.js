@@ -7,7 +7,7 @@ const FavoritesScreen = () => {
     const {savedPosts}=useSavePost();
     // Function to render each saved post item
     const renderPostItem = ({ item }) => (
-        <TouchableOpacity style={styles.postItem} onPress={() => router.push({pathname:`forms/animalPostDetails`,params:item})}>
+        <TouchableOpacity style={styles.postItem} onPress={() => router.push({pathname:`common/animalPostDetails`,params:item})}>
             <Image source={{ uri: item.images }} style={styles.postImage} />
             <View style={styles.postInfo}>
                 <Text style={styles.postTitle}>{item.breed} - ${item.price}</Text>

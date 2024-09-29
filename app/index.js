@@ -12,20 +12,20 @@ const index = () => {
         <>
         {/* Animals Box */}
         <TouchableOpacity style={styles.box} onPress={()=>{
-                  router.push('/Animals/Animal')
+                  router.replace('/Animals/Animal')
             }}>
                 <Text style={styles.boxText}>Animals</Text>
             </TouchableOpacity>
 
             {/* Crops Box */}
             <TouchableOpacity style={styles.box} onPress={()=>{
-                  router.push('/Crops/Crops')
+                  router.replace('/Crops/Crops')
             }}>
                 <Text style={styles.boxText}>Crops</Text>
             </TouchableOpacity>
         </>:
             <TouchableOpacity style={styles.box} onPress={()=>{
-                  router.push('/auth/login')
+                  router.replace('/auth/login')
             }}>
                 <Text style={styles.boxText}>Login</Text>
             </TouchableOpacity>
