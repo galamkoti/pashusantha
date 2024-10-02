@@ -1,0 +1,78 @@
+import { router } from 'expo-router';
+import React from 'react';
+import { View, Text, Image, StyleSheet, FlatList, Dimensions, Pressable } from 'react-native';
+
+const categories = [
+  { name: 'Cow', image: require('../../assets/animal/cow.jpg'), value: 'cow' },
+  { name: 'Buffalo', image: require('../../assets/animal/buffalo.jpg'), value: 'buffalo' },
+  { name: 'Goat', image: require('../../assets/animal/goat.jpg'), value: 'goat' },
+  { name: 'Sheep', image: require('../../assets/animal/sheep.jpg'), value: 'sheep' },
+  { name: 'Hen', image: require('../../assets/animal/chicken.jpg'), value: 'hen' },
+  { name: 'Cow', image: require('../../assets/animal/cow.jpg'), value: 'cow' },
+  { name: 'Buffalo', image: require('../../assets/animal/buffalo.jpg'), value: 'buffalo' },
+  { name: 'Goat', image: require('../../assets/animal/goat.jpg'), value: 'goat' },
+  { name: 'Sheep', image: require('../../assets/animal/sheep.jpg'), value: 'sheep' },
+  { name: 'Hen', image: require('../../assets/animal/chicken.jpg'), value: 'hen' },
+];
+
+const onPressCategory = async (item) => {
+  router.push({ pathname: 'common/categoryPreview', params: item });
+};
+
+const AllCategories = () => {
+  const renderItem = ({ item }) => (
+    <Pressable style={styles.categoryItem} onPress={() => onPressCategory(item)}>
+      <Image source={item.image} style={styles.categoryImage} />
+      <Text style={styles.categoryName}>{item.name}</Text>
+    </Pressable>
+  );
+
+  return (
+    <FlatList
+      data={categories}
+      keyExtractor={(item, index) => index.toString()}
+      renderItem={renderItem}
+      contentContainerStyle={styles.container}
+      showsVerticalScrollIndicator={false}
+    />
+  );
+};
+
+// Get the screen width for responsiveness
+const screenWidth = Dimensions.get('window').width;
+
+const styles = StyleSheet.create({
+  container: {
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  categoryItem: {
+    width: screenWidth * 0.9, // Take 90% of the screen width
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    marginVertical: 10,
+    flexDirection: 'row', // Align items side by side
+    alignItems: 'center', // Vertically center the image and text
+    padding: screenWidth * 0.03, // Padding relative to screen size
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 5, // Android shadow
+  },
+  categoryImage: {
+    width: screenWidth * 0.2, // Image width is 20% of screen width
+    height: screenWidth * 0.2, // Image height matches width for a square
+    resizeMode: 'cover', // Cover the image in the space provided
+    borderRadius: 10, // Rounded corners for the image
+    marginRight: screenWidth * 0.05, // Space between image and text
+  },
+  categoryName: {
+    fontSize: screenWidth * 0.05, // Font size relative to screen size (5% of width)
+    fontWeight: 'bold',
+    color: '#333',
+    flexShrink: 1, // Ensure text doesn't overflow
+  },
+});
+
+export default AllCategories;

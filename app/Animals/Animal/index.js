@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, Alert, ActivityIndicator, Text, RefreshControl, Button, Pressable } from 'react-native';
+import { View, StyleSheet, FlatList, Alert, ActivityIndicator, Text, RefreshControl, Button, Pressable, ScrollView } from 'react-native';
 import PostCard from '../../Components/Crops/CropsPostCard';
 import axios from 'axios';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,8 +7,9 @@ import { useLanguage } from '../../context/LanguageContext';
 import { useLocation } from '../../context/LocationContext';
 import { Picker } from '@react-native-picker/picker';
 import {router} from 'expo-router'
-import Entypo from '@expo/vector-icons/Entypo';
+import {Entypo,FontAwesome6} from '@expo/vector-icons';
 import LocationModal from '../../Components/Location/locationModal';
+import CategoriesList from '../../Components/Animal/CategoriesList';
 
 // Render function for PostCard
 const renderItem = ({ item }) => {
@@ -96,10 +97,11 @@ const Index = () => {
 
     // setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/api/posts/nearby?lat=${lat}&lon=${lon}&radius=${radius}`);
+      const response = await axios.get(`http://192.168.0.106:5000/api/posts/nearby?lat=${lat}&lon=${lon}&radius=${radius}`);
       console.log("nearby:",response.data)
       setPosts(response.data.data);
     } catch (error) {
+      console.log(error)
       setError(error);
     } finally {
       // setLoading(false);
@@ -146,13 +148,16 @@ const Index = () => {
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.topContainer}>
-        <Pressable style={styles.locationContainer} onPress={toggleLocationModal}>
-          <Entypo name="location" size={24} color="black" />
-          {locationName ?
-            <Text style={styles.locationTitle}>{locationName}</Text>
-            : <Text>Location is not given</Text>
-          }
-        </Pressable>
+      <View style={styles.backAndLocationContainer}>
+      <FontAwesome6 name="arrow-left" size={24} color="black" onPress={()=> router.replace("/")} />
+          <Pressable style={styles.locationContainer} onPress={toggleLocationModal}>
+            <Entypo name="location" size={24} color="black" />
+            {locationName ?
+              <Text style={styles.locationTitle}>{locationName}</Text>
+              : <Text>Location is not given</Text>
+            }
+          </Pressable>
+      </View>
         {/* Show Picker only after language has been loaded */}
         {!languageLoading && (
           <View style={styles.languagePicker}>
@@ -179,11 +184,16 @@ const Index = () => {
         data={data}
         showsVerticalScrollIndicator={false}
         renderItem={renderItem}
-        keyExtractor={(item) => item._id?.$oid || item.id} // Fallback key if _id is missing
+        keyExtractor={(item) => item._id || item.id} // Fallback key if _id is missing
         contentContainerStyle={styles.postContainer}
         onEndReached={loadMorePosts} // Pagination
         onEndReachedThreshold={0.9} // Trigger when the list is 90% from the bottom
         ListFooterComponent={renderFooter} // Show loading spinner at the bottom when loading more
+        ListHeaderComponent={
+          <View>
+            <CategoriesList />
+          </View>
+        }
         refreshControl={
           <RefreshControl refreshing={isRefreshing} onRefresh={refreshPosts} /> // Pull-to-refresh
         }
@@ -221,12 +231,16 @@ const styles = StyleSheet.create({
   },
   locationContainer: {
     flexDirection: 'row',
+    marginLeft:12
   },
   locationTitle: {
     fontSize: 18,
     fontWeight: '400',
     marginLeft: 5,
   },
+  backAndLocationContainer:{
+    flexDirection:"row"
+  }
 });
 
 export default Index;

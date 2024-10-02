@@ -84,7 +84,7 @@ const AnimalForm = () => {
     console.log("formData",formData);
 
     try {
-      const response = await axios.post('http://192.168.0.110:5000/api/animal/create', {
+      const response = await axios.post('https://pashupanta-backend-production.up.railway.app/api/animal/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

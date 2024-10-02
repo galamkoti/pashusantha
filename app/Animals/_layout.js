@@ -35,7 +35,7 @@ export default () => {
             <Tabs.Screen name="Animal" options={{
                 headerLeft:()=>(
                     <Ionicons name="arrow-back" size={30} color="black" onPress={()=> router.replace("/")} />),
-                // headerShown:false,
+                headerShown:false,
                 title: translations.animals||'Animals',
                 tabBarIcon: ({ color, size }) => 
                   <MaterialCommunityIcons name="cow" size={size} color={color} />
