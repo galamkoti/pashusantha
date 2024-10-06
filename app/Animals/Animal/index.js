@@ -97,7 +97,7 @@ const Index = () => {
 
     // setLoading(true);
     try {
-      const response = await axios.get(`http://192.168.0.106:5000/api/posts/nearby?lat=${lat}&lon=${lon}&radius=${radius}`);
+      const response = await axios.get(`http://192.168.0.113:5000/api/posts/nearby?lat=${lat}&lon=${lon}&radius=${radius}`);
       console.log("nearby:",response.data)
       setPosts(response.data.data);
     } catch (error) {

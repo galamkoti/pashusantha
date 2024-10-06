@@ -4,13 +4,6 @@ import { router} from 'expo-router';
 import {useLanguage} from '../../context/LanguageContext'
 import { FontAwesome } from '@expo/vector-icons';
 
-
-// const renderSellCategory = ({ item }) => {
-//   return (
-    
-//   );
-// };
-
 const index = () => {
   const {  translations } = useLanguage();
   const handleWhatsApp = () => {
@@ -20,20 +13,8 @@ const index = () => {
         alert('Make sure WhatsApp is installed on your device');
     });
 };
-  // const categoriesToSell = [
-  //   { id: '1', name:, image:  ,form:'animal' },
-  // ];
   return (
     <SafeAreaView style={styles.mainContainer}>
-      {/* <Text style={styles.title}>Pick a Category</Text> */}
-      {/* <FlatList
-        data={categoriesToSell}
-        renderItem={renderSellCategory}
-        keyExtractor={(item) => item.id}
-        showsVerticalScrollIndicator={false}
-        // numColumns={2}
-        // columnWrapperStyle={styles.row}
-      /> */}
       <TouchableOpacity style={styles.categoryContainer} onPress={()=>{
       router.push({pathname:`/forms/animal`})
     }}>
@@ -42,7 +23,7 @@ const index = () => {
     </TouchableOpacity>
       <TouchableOpacity style={styles.categoryContainer} onPress={handleWhatsApp}>
                 <FontAwesome name="whatsapp" size={100} color="green" />
-                <Text style={styles.title}>Contact via WhatsApp</Text>
+                <Text style={styles.title}>{translations.sell_pashu_using_whatsapp}</Text>
             </TouchableOpacity>
     </SafeAreaView>
   );

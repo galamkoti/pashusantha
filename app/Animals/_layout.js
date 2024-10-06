@@ -58,7 +58,7 @@ export default () => {
             }}
             />
             <Tabs.Screen name="Posts" options={{
-                title: 'My Posts',
+                title: translations.my_posts||'My Posts',
                 headerShown: false,
                 tabBarIcon: ({ color, size }) => 
                   <MaterialIcons name="favorite-border" size={size} color={color} />

@@ -1,24 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView, Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import * as ImagePicker from 'expo-image-picker';
 import { useUserData } from '../context/UserContext';
 import axios from 'axios';
 import { useLocation } from '../context/LocationContext';
-
-const animalCategories = [
-  { label: 'Cow', value: 'cow' },
-  { label: 'Buffalo', value: 'buffalo' },
-  { label: 'Sheep', value: 'sheep' },
-  { label: 'Goat', value: 'goat' }
-];
-
-const breedOptions = {
-  cow: ['Holstein', 'Jersey', 'Guernsey'],
-  buffalo: ['Murrah', 'Nili-Ravi', 'Bhadawari'],
-  sheep: ['Dorset', 'Hampshire', 'Suffolk'],
-  goat: ['Nubian', 'Alpine', 'Saanen']
-};
+import { useLanguage } from '../context/LanguageContext';
+import * as ImagePicker from 'expo-image-picker'; 
 
 const AnimalForm = () => {
   const [category, setCategory] = useState('');
@@ -30,36 +17,65 @@ const AnimalForm = () => {
   const [age, setAge] = useState('');
   const [lactationPeriod, setLactationPeriod] = useState('');
   const [isBargainable, setIsBargainable] = useState(false);
-  const [image, setImage] = useState(null);
-  const [video, setVideo] = useState(null);
   const {user}=useUserData();
   const {location}=useLocation();
+  const {translations}=useLanguage();
+  const [images, setImages] = useState(null);
+  const [videos, setVideos] = useState([]);
 
-
-  // Image Picker function
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const { status } = await ImagePicker.getMediaLibraryPermissionsAsync();
+    if (status != 'granted') {
+      Alert.alert('Permission Denied', 'We need camera roll permissions to proceed.');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
+      quality: 0.5,
+    });
+    console.log(result);
+
+    if (!result.canceled) {
+      // Append the selected image to the list of images
+      setImages(result.assets[0].uri);  // Adjusted to work with single selection
+    }
+  };
+
+      // Function to pick multiple videos
+  const pickVideos = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Denied', 'We need camera roll permissions to proceed.');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+      allowsMultipleSelection: true,  // For multiple selection
       quality: 1,
     });
 
-    if (!result.cancelled) {
-      setImage(result.uri);
+    if (!result.canceled) {
+      setVideos([...videos, ...result.selected]);  // Append new videos to existing state
     }
   };
 
-  // Video Picker function
-  const pickVideo = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
-    });
-
-    if (!result.cancelled) {
-      setVideo(result.uri);
-    }
+  const animalCategories = [
+    { label: translations.cows|| 'Cow', value: 'cow' },
+    { label: translations.buffalo||'Buffalo', value: 'buffalo' },
+    { label: 'Sheep', value: 'sheep' },
+    { label: 'Goat', value: 'goat' }
+  ];
+  
+  const breedOptions = {
+    cow: ['Holstein', 'Jersey', 'Guernsey'],
+    buffalo: ['Murrah', 'Nili-Ravi', 'Bhadawari'],
+    sheep: ['Dorset', 'Hampshire', 'Suffolk'],
+    goat: ['Nubian', 'Alpine', 'Saanen']
   };
+
+
 
   // Function to submit the form
   const submitForm = async () => {
@@ -108,7 +124,7 @@ const AnimalForm = () => {
       <Text style={styles.title}>Add Animal Details</Text>
 
       {/* Animal Category */}
-      <Text style={styles.label}>Category:</Text>
+      <Text style={styles.label}>{translations.category}:</Text>
       <View style={styles.picker}>
       <Picker
         selectedValue={category}
@@ -128,7 +144,7 @@ const AnimalForm = () => {
         
 
       {/* Breed */}
-      <Text style={styles.label}>Breed:</Text>
+      <Text style={styles.label}>{translations.breed}:</Text>
       <View style={styles.picker}>
       <Picker
         selectedValue={breed}
@@ -144,7 +160,7 @@ const AnimalForm = () => {
       </View>
 
       {/* Milk Capacity */}
-      <Text style={styles.label}>Milk Capacity (Liters):</Text>
+      <Text style={styles.label}>{translations.milk_capacity} ({translations.litres}):</Text>
       <TextInput
         style={styles.input}
         placeholder="Milk Capacity (Liters)"
@@ -154,7 +170,7 @@ const AnimalForm = () => {
       />
 
       {/* Price */}
-      <Text style={styles.label}>Price:</Text>
+      <Text style={styles.label}>{translations.select_price}:</Text>
       <TextInput
         style={styles.input}
         placeholder="Price (in $)"
@@ -164,7 +180,7 @@ const AnimalForm = () => {
       />
 
       {/* Pregnancy Status */}
-      <Text style={styles.label}>Pregnancy Status:</Text>
+      <Text style={styles.label}>{translations.pregnacy_status}:</Text>
       <View style={styles.picker}>
       <Picker
         selectedValue={pregnancyStatus}
@@ -178,7 +194,7 @@ const AnimalForm = () => {
       </View>
 
       {/* Has Child */}
-      <Text style={styles.label}>Has Child:</Text>
+      <Text style={styles.label}>{translations.child_status}:</Text>
       <View style={styles.picker}>
       <Picker
         selectedValue={hasChild}
@@ -192,7 +208,7 @@ const AnimalForm = () => {
       </View>
 
       {/* Age */}
-      <Text style={styles.label}>Age (Years):</Text>
+      <Text style={styles.label}>{translations.pashu_age} (Years):</Text>
       <TextInput
         style={styles.input}
         placeholder="Age (Years)"
@@ -202,7 +218,7 @@ const AnimalForm = () => {
       />
 
       {/* Lactation Period */}
-      <Text style={styles.label}>Lactation Period (Months):</Text>
+      <Text style={styles.label}>{translations.lactation_period} (Months):</Text>
       <TextInput
         style={styles.input}
         placeholder="Lactation Period (Months)"
@@ -212,7 +228,7 @@ const AnimalForm = () => {
       />
 
       {/* Is Bargainable */}
-      <Text style={styles.label}>Bargainable on Price:</Text>
+      <Text style={styles.label}>{translations.can_bargain}:</Text>
       <View style={styles.picker}>
       <Picker
         selectedValue={isBargainable ? 'Yes' : 'No'}
@@ -225,15 +241,18 @@ const AnimalForm = () => {
       </Picker>
       </View>
       
+      <Button title="Pick Images" onPress={pickImage} />
+      <Button title="Pick Videos" onPress={pickVideos} />
 
-      {/* Image Picker */}
-      {/* <Button title="Pick an Image" onPress={pickImage} />
-      {image && <Text style={styles.fileInfo}>Image selected</Text>} */}
-
-      {/* Video Picker */}
-      {/* <Button title="Pick a Video" onPress={pickVideo} />
-      {video && <Text style={styles.fileInfo}>Video selected</Text>} */}
-
+      {/* Display selected images */}
+      {images && <Image source={{ uri: images }} style={styles.image} />}
+      {/* {images.length > 0 && (
+        <View>
+          {images.map((image, index) => (
+            <Image key={index} source={{ uri: image.uri }} style={{ width: 100, height: 100 }} />
+          ))}
+        </View>
+      )} */}
       {/* Submit Button */}
       <Button title="Submit" onPress={submitForm} color="#4CAF50" />
     </ScrollView>
@@ -244,6 +263,10 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     backgroundColor: '#f8f8f8',
+  },
+  image: {
+    width: 200,
+    height: 200,
   },
   title: {
     fontSize: 24,

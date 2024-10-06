@@ -13,7 +13,11 @@ const PostCard = ({ category, breed, distance, datePosted, image, userName, desc
       {/* Category and Distance */}
       <View style={styles.header}>
         <View style={styles.headerRowContainer}>
-          <Text style={styles.category}>{category}</Text>
+          <Text style={styles.category}>{category=='cow'?translations.cows:
+                                      category=='buffalo'?translations.buffalo:
+                                      category=='goat'?translations.goats:
+                                      category=='sheep'?translations.sheeps:
+                                      category=='hen'?translations.hens:category}</Text>
           <Text style={styles.category}>  ({breed})</Text>
         </View>
         <Text style={styles.distance}>

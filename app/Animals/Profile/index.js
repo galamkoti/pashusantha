@@ -3,6 +3,7 @@ import React, { useContext, useState } from 'react';
 import {router} from 'expo-router'
 import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, LottieView } from 'react-native';
 import { useUserData } from '../../context/UserContext'
+import { useLanguage } from '../../context/LanguageContext';
 
 // Mocked data for useful links or options like favorites, etc.
 const usefulLinks = [
@@ -12,7 +13,7 @@ const usefulLinks = [
 ];
 
 const index = () => {
-    // const [userInfo,setUserInfo]=useState({});
+    const {translations}=useLanguage();
     const {user,logoutUser}=useUserData();
     console.log("userInfo in profile",user)
     
@@ -41,7 +42,7 @@ const index = () => {
                 style={styles.linksContainer}
             />
             <TouchableOpacity style={styles.logOutButton} onPress={logoutUser}>
-                <Text>LogOut</Text>
+                <Text>{translations.logout}</Text>
             </TouchableOpacity>
         </View>
     );

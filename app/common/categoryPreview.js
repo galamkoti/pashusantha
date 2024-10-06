@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList, Alert, ActivityIndicator, Text, RefreshControl, Button, Pressable, ScrollView } from 'react-native';
 
 import axios from 'axios';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {router, useLocalSearchParams} from 'expo-router'
 
@@ -60,7 +59,7 @@ const Index = () => {
 
     setLoading(true);
     try {
-      const response = await axios.get(`http://192.168.0.106:5000/api/animal?page=${pageNumber}&animalType=${category}&kind=${kind}`);
+      const response = await axios.get(`http://192.168.0.113:5000/api/animal?page=${pageNumber}&animalType=${category}&kind=${kind}`);
       const { data: fetchedData, totalPages: serverTotalPages } = response.data;
 
       if (pageNumber === 1) {

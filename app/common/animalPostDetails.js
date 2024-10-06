@@ -2,9 +2,11 @@ import { View, Text, Image, StyleSheet, Button, ScrollView, TouchableOpacity, Al
 import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams } from 'expo-router';
-import { FontAwesome } from '@expo/vector-icons'; // Import FontAwesome for WhatsApp logo
+import { FontAwesome } from '@expo/vector-icons';
+import { useLanguage } from '../context/LanguageContext';
 
 const AnimalPostDetails = () => {
+    const {translations}=useLanguage();
     const item = useLocalSearchParams(); // Extract item details from params
     const { phone, price, locationName, description, animalType, breed, age, images, _id } = item;
 
@@ -60,7 +62,7 @@ const AnimalPostDetails = () => {
 
             {/* Animal Details */}
             <View style={styles.detailsContainer}>
-                <Text style={styles.label}>Animal Type:</Text>
+                <Text style={styles.label}>{translations.category || "Category"}:</Text>
                 <Text style={styles.value}>{animalType}</Text>
 
                 <Text style={styles.label}>Breed:</Text>
@@ -69,10 +71,10 @@ const AnimalPostDetails = () => {
                 <Text style={styles.label}>Age:</Text>
                 <Text style={styles.value}>{age} years old</Text>
 
-                <Text style={styles.label}>Price:</Text>
+                <Text style={styles.label}>{translations.price}</Text>
                 <Text style={styles.value}>${price}</Text>
 
-                <Text style={styles.label}>Location:</Text>
+                <Text style={styles.label}>{translations.location}:</Text>
                 <Text style={styles.value}>{locationName}</Text>
 
                 <Text style={styles.label}>Description:</Text>

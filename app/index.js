@@ -3,8 +3,10 @@ import {  router} from 'expo-router'
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useUserData } from './context/UserContext';
+import { useLanguage } from './context/LanguageContext';
 const index = () => {
     const {user}=useUserData();
+    const {translations}=useLanguage();
     console.log("user in app index",user);
   return (
     <View style={styles.container}>
@@ -14,14 +16,14 @@ const index = () => {
         <TouchableOpacity style={styles.box} onPress={()=>{
                   router.replace('/Animals/Animal')
             }}>
-                <Text style={styles.boxText}>Animals</Text>
+                <Text style={styles.boxText}>{translations.animals}</Text>
             </TouchableOpacity>
 
             {/* Crops Box */}
             <TouchableOpacity style={styles.box} onPress={()=>{
                   router.replace('/Crops/Crops')
             }}>
-                <Text style={styles.boxText}>Crops</Text>
+                <Text style={styles.boxText}>{translations.crops}</Text>
             </TouchableOpacity>
         </>:
             <TouchableOpacity style={styles.box} onPress={()=>{
