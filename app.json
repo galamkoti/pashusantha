@@ -19,7 +19,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.koti9032.vikraimobile"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -27,6 +28,11 @@
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "57fc057e-f76e-410d-a30f-b68f6a3d65e1"
+      }
+    }
   }
 }

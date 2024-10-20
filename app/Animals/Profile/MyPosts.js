@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList, Alert, ActivityIndicator, Text, RefreshControl } from 'react-native';
-import PostCard from '../../../Components/Crops/CropsPostCard';
 import axios from 'axios';
-import { useUserData } from '../../../context/UserContext';
+import { useUserData } from '../../context/UserContext';
+import MyPostCard from '../../Components/Animal/MyPostCard';
+import { router } from 'expo-router';
 
 // Render function for PostCard
 const renderItem = ({ item }) => {
@@ -11,7 +12,7 @@ const renderItem = ({ item }) => {
   const phoneNumber = item.phone.toString() || 'phone number not available'; // Fallback if phone is not available
 
   return (
-    <PostCard
+    <MyPostCard
       category={item.animalType || 'Unknown'}
       distance={item.distance || 'N/A'} // Handle distance gracefully
       datePosted={item.createdAt} // Convert timestamp to a readable format
@@ -20,16 +21,13 @@ const renderItem = ({ item }) => {
       description={item.description}
       breed={item.breed}
       onCallPress={() => handleCallPress(phoneNumber)}
-      onPostPressed={()=> handlePostPress()}
+      onPostPressed={()=> handlePostPress(item)}
     />
   );
 };
-const handlePostPress =()=>{
-  Alert.alert("Clicked On Post")
-}
-// Handle Call Button Press
-const handleCallPress = (phone) => {
-  Alert.alert('Calling', phone);
+const handlePostPress = (item) => {
+  console.log("pressed on post",item)
+  router.push({pathname:`common/animalPostDetails`,params:item})
 };
 
 const Index = () => {
@@ -100,8 +98,9 @@ const Index = () => {
         data={data}
         showsVerticalScrollIndicator={false}
         renderItem={renderItem}
-        keyExtractor={(item) => item._id?.$oid || item.id} // Fallback key if _id is missing
+        keyExtractor={(item) => item._id || item.id} // Fallback key if _id is missing
         contentContainerStyle={styles.postContainer}
+        numColumns={2}
         onEndReached={loadMorePosts} // Pagination
         onEndReachedThreshold={0.9} // Trigger when the list is 90% from the bottom
         ListFooterComponent={renderFooter} // Show loading spinner at the bottom when loading more

@@ -19,7 +19,6 @@ const CustomTabBarButton =({children,onPress}) =>(
             {children}
         </View>
     </TouchableOpacity>
-
 )
 
 export default () => {
@@ -29,8 +28,9 @@ export default () => {
             tabBarLabelStyle: {
                 fontSize: 13,  
                 fontWeight: 'bold',  
-                marginTop:7
+                marginTop:7,
               },
+              tabBarActiveTintColor: 'black'
             }}>
             <Tabs.Screen name="Animal" options={{
                 headerLeft:()=>(
@@ -40,15 +40,10 @@ export default () => {
                 tabBarIcon: ({ color, size }) => 
                   <MaterialCommunityIcons name="cow" size={size} color={color} />
             }} />
-            <Tabs.Screen name="Subscription" options={{
-                title: 'Subscribe',
-                tabBarIcon: ({ color, size }) => 
-                  <MaterialCommunityIcons name="cow" size={size} color={color} />
-            }} />
             <Tabs.Screen name="Sell" options={{
                 title: translations.sell||'Sell',
                 tabBarIcon: ({ color, size }) => (
-                    <View style={[styles.sellIconContainer, { backgroundColor: '#3c6ef2' }]}>
+                    <View style={[styles.sellIconContainer, { backgroundColor: 'black' }]}>
                       <Feather name="plus-circle" size={size + 15} color="#fff" />
                     </View>
                   ),
@@ -57,12 +52,6 @@ export default () => {
                 )
             }}
             />
-            <Tabs.Screen name="Posts" options={{
-                title: translations.my_posts||'My Posts',
-                headerShown: false,
-                tabBarIcon: ({ color, size }) => 
-                  <MaterialIcons name="favorite-border" size={size} color={color} />
-            }} />
             <Tabs.Screen name="Profile" options={{
                 title: translations.profile|| 'Profile',
                 tabBarIcon: ({ color, size }) => 
@@ -89,7 +78,7 @@ const styles=StyleSheet.create({
         width: 70,
         height: 70,
         borderRadius: 35,
-        borderColor: '#fff',
+        borderColor: 'black',
         borderWidth: 4
       },
       languageIcon:{

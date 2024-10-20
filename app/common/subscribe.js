@@ -17,7 +17,7 @@ const SubscriptionPage = () => {
 
         {/* Subscription Benefits Container */}
         <View style={styles.benefitsContainer}>
-          <Text style={styles.title}>Subscription Benefits</Text>
+          <Text style={styles.title}>Subscription Benefits Are Here</Text>
 
           <View style={styles.benefitItem}>
             <Text style={styles.benefitText}>🌟 Your Post (Animal/Crops) will be displayed on top of the posts</Text>

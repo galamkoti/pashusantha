@@ -14,16 +14,16 @@ const index = () => {
         <>
         {/* Animals Box */}
         <TouchableOpacity style={styles.box} onPress={()=>{
-                  router.replace('/Animals/Animal')
+                  router.replace('Animals/Animal')
             }}>
-                <Text style={styles.boxText}>{translations.animals}</Text>
+                <Text style={styles.boxText}>{translations.animals || 'Animals'}</Text>
             </TouchableOpacity>
 
             {/* Crops Box */}
             <TouchableOpacity style={styles.box} onPress={()=>{
-                  router.replace('/Crops/Crops')
+                  router.replace('Crops/Crops')
             }}>
-                <Text style={styles.boxText}>{translations.crops}</Text>
+                <Text style={styles.boxText}>{translations.crops || 'Crops'}</Text>
             </TouchableOpacity>
         </>:
             <TouchableOpacity style={styles.box} onPress={()=>{

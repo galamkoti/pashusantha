@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, Alert } from 'react-native';
+import { View, TextInput, Button, Text, Alert, Image,StyleSheet } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { useUserData } from '../context/UserContext';
+import {useLanguage} from '../context/LanguageContext'
 
 const PhoneAuthScreen = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -11,6 +12,7 @@ const PhoneAuthScreen = () => {
   const [verificationSent, setVerificationSent] = useState(false);
   const [message, setMessage] = useState('');
   const {loginUser}=useUserData();
+  const {translations}=useLanguage();
 
   // Send OTP to the user's phone number
   const sendOTP = async () => {
@@ -65,6 +67,8 @@ const PhoneAuthScreen = () => {
     <View style={{ padding: 20, flex: 1, justifyContent: 'center' }}>
       {!verificationSent ? (
         <>
+          <Image source={require("../../assets/logo.jpg")} style={styles.logo} />
+          <Text>{ translations.login_with_mobile||'Login With Mobile'}</Text>
           <TextInput
             placeholder="Enter phone number"
             value={phoneNumber}
@@ -92,15 +96,22 @@ const PhoneAuthScreen = () => {
             }}
           />
           <Button title="Verify OTP" onPress={verifyOTP} />
+          <Button title="Send OTP Again" onPress={()=>{}} />
         </>
       )}
 
       {message ? <Text style={{ marginTop: 20, color: 'green' }}>{message}</Text> : null}
-
-      {/* Example logout button */}
-      <Button title="Logout" onPress={logout} />
     </View>
   );
 };
 
 export default PhoneAuthScreen;
+
+const styles=StyleSheet.create({
+  logo:{
+    height:150,
+    width:200,
+    borderRadius:50,
+    justifyContent:"center",
+  }
+})

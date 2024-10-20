@@ -1,14 +1,17 @@
-import { View, Text, Image, StyleSheet, Button, ScrollView, TouchableOpacity, Alert, Linking } from 'react-native';
+import { View, Text, Image, StyleSheet, Button, ScrollView, TouchableOpacity, Alert, Linking, FlatList, Dimensions } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { useLanguage } from '../context/LanguageContext';
 
+const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
+
 const AnimalPostDetails = () => {
     const {translations}=useLanguage();
-    const item = useLocalSearchParams(); // Extract item details from params
+    const item = useLocalSearchParams(); 
     const { phone, price, locationName, description, animalType, breed, age, images, _id } = item;
+    console.log("images in details page",images)
 
     const [isSaved, setIsSaved] = useState(false); // State to check if the post is saved
 
@@ -82,11 +85,11 @@ const AnimalPostDetails = () => {
             </View>
 
             {/* Call to Action Button */}
-            <Button title="Call Seller" onPress={() => Linking.openURL(`tel:${phone}`)} color="#4CAF50" />
+            <Button title="Call Seller" onPress={() => Linking.openURL(`tel:${phone}`)} color="black" />
 
             {/* Save Post Button */}
             <TouchableOpacity style={styles.saveButton} onPress={toggleSavePost}>
-                <FontAwesome name={isSaved ? "bookmark" : "bookmark-o"} size={24} color={isSaved ? "#FFD700" : "#000"} />
+                <FontAwesome name={isSaved ? "bookmark" : "bookmark-o"} size={24} color={isSaved ? "black" : "#000"} />
                 <Text style={styles.saveText}>{isSaved ? 'Saved to Favorites' : 'Save Post'}</Text>
             </TouchableOpacity>
         </ScrollView>
