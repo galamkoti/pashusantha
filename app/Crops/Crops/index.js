@@ -3,11 +3,11 @@ import { View, StyleSheet, FlatList, Alert, ActivityIndicator, Text, RefreshCont
 import PostCard from '../../Components/Crops/CropsPostCard';
 import axios from 'axios';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useLanguage } from '../../context/LanguageContext';
-import { useLocation } from '../../context/LocationContext';
-import { Picker } from '@react-native-picker/picker';
+// import { useLanguage } from '../../context/LanguageContext';
+// import { useLocation } from '../../context/LocationContext';
+// import { Picker } from '@react-native-picker/picker';
 import Entypo from '@expo/vector-icons/Entypo';
-import LocationModal from '../../Components/Location/locationModal';
+// import LocationModal from '../../Components/Location/locationModal';
 
 // Render function for PostCard
 const renderItem = ({ item }) => {
@@ -46,14 +46,14 @@ const Index = () => {
   const [page, setPage] = useState(1); // Current page number
   const [totalPages, setTotalPages] = useState(1); // Total number of pages
   const [isRefreshing, setIsRefreshing] = useState(false); // Refreshing state for pull-to-refresh
-  const { language, translations, languageLoading, changeLanguage } = useLanguage();
-  const { location, locationName, fetchLocation } = useLocation();
-  const [selectedLanguage, setSelectedLanguage] = useState(null); // Keep track of selected language
-  const [isLocationModalVisible, setLocationModalVisible] = useState(false);
+  // const { language, translations, languageLoading, changeLanguage } = useLanguage();
+  // const { location, locationName, fetchLocation } = useLocation();
+  // const [selectedLanguage, setSelectedLanguage] = useState(null); // Keep track of selected language
+  // const [isLocationModalVisible, setLocationModalVisible] = useState(false);
 
-  const toggleLocationModal = () => {
-    setLocationModalVisible(!isLocationModalVisible);
-  }
+  // const toggleLocationModal = () => {
+  //   setLocationModalVisible(!isLocationModalVisible);
+  // }
 
   // Fetch data function (handles both initial fetch and pagination)
   const fetchAnimalPostsData = async (pageNumber = 1, isRefreshing = false) => {
@@ -99,11 +99,11 @@ const Index = () => {
   };
 
   // Sync selectedLanguage with the language from context after it's loaded
-  useEffect(() => {
-    if (!languageLoading && selectedLanguage !== language) {
-      setSelectedLanguage(language); // Only set selected language when language loading is done and it's different
-    }
-  }, [language, languageLoading]);
+  // useEffect(() => {
+  //   if (!languageLoading && selectedLanguage !== language) {
+  //     setSelectedLanguage(language); // Only set selected language when language loading is done and it's different
+  //   }
+  // }, [language, languageLoading]);
 
   // Render footer loading indicator for pagination
   const renderFooter = () => {
@@ -114,21 +114,21 @@ const Index = () => {
   if (loading && page === 1) return <ActivityIndicator size="large" color="#0000ff" />; // Show loading indicator only for initial load
   if (error) return <Text>Error: {error.message}</Text>;
 
-  console.log("addres", locationName)
+  // console.log("addres", locationName)
 
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.topContainer}>
         <Pressable style={styles.locationContainer} onPress={toggleLocationModal}>
           <Entypo name="location" size={24} color="black" />
-          {locationName ?
+          {/* {locationName ?
             <Text style={styles.locationTitle}>{locationName}</Text>
             : <Text>Location is not given</Text>
-          }
+          } */}
          
         </Pressable>
         {/* Show Picker only after language has been loaded */}
-        {!languageLoading && (
+        {/* {!languageLoading && (
           <View style={styles.languagePicker}>
             <Picker
               selectedValue={selectedLanguage}
@@ -146,7 +146,7 @@ const Index = () => {
               <Picker.Item label="Punjabi (ਪੰਜਾਬੀ)" value="pa" />
             </Picker>
           </View>
-        )}
+        )} */}
       </View>
 
       <FlatList
@@ -162,10 +162,10 @@ const Index = () => {
           <RefreshControl refreshing={isRefreshing} onRefresh={refreshPosts} /> // Pull-to-refresh
         }
       />
-      <LocationModal 
+      {/* <LocationModal 
       visible={isLocationModalVisible}
       onClose={toggleLocationModal}
-      />
+      /> */}
     </SafeAreaView>
   );
 };

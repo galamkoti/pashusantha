@@ -1,70 +1,74 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useContext, useState } from 'react';
-import {router} from 'expo-router'
-import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, LottieView } from 'react-native';
-import { useUserData } from '../../context/UserContext'
+import React from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { useUserData } from '../../context/UserContext';
 import { useLanguage } from '../../context/LanguageContext';
+import MyPosts from "./MyPosts";
+import favorites from "./favorites";
 
-// Mocked data for useful links or options like favorites, etc.
-const usefulLinks = [
-    { id: '1', title: 'Favorites', icon: require('../../../assets/sell/crops.png') },
-    { id: '2', title: 'My Posts', icon: require('../../../assets/sell/crops.png') },
-    { id: '3', title: 'Settings', icon: require('../../../assets/sell/crops.png') },
-];
+const Tab = createMaterialTopTabNavigator();
 
-const index = () => {
-    const {translations}=useLanguage();
-    const {user,logoutUser}=useUserData();
-    console.log("userInfo in profile",user)
-    
+const ProfileTabs = () => {
+    const { translations } = useLanguage();
+    return (
+        <Tab.Navigator
+            screenOptions={{
+                tabBarLabelStyle: { fontSize: 14, fontWeight: 'bold' },
+                tabBarStyle: { backgroundColor: '#f5f5f5' },
+                tabBarIndicatorStyle: { backgroundColor: 'black' },
+            }}>
+            <Tab.Screen name="MyPosts" component={MyPosts} options={{
+                title: translations.my_posts|| 'My Posts'}}
+                />
+            <Tab.Screen name="favorites" component={favorites}  options={{
+                title: translations.saved_posts|| 'Favorites'}}/>
+        </Tab.Navigator>
+    );
+};
+
+const ProfileScreen = () => {
+    const { translations } = useLanguage();
+    const { user, logoutUser } = useUserData();
+
     return (
         <View style={styles.container}>
-            {/* Animated Farmer Picture */}
-            <Image style={styles.profilePicture}
-            source={{uri:"https://media.istockphoto.com/id/1330214182/photo/happy-smiling-indian-farmer-counting-currency-notes-inside-the-greenhouse-or-polyhouse.jpg?s=1024x1024&w=is&k=20&c=22iXxp6H-_uD7p1Cgjusk65k26ndUlz6bV2okbA1Lkg="}}/>
-            {/* Farmer's Basic Details */}
-            <View style={styles.detailsContainer}>
-                <Text style={styles.nameOfUser}>{user.name}</Text>
-                <Text style={styles.detail}>Farmer</Text>
-                <Text style={styles.detail}>{user.email}</Text>
-                <Text style={styles.detail}>{user.phone}</Text>
+            <View style={styles.userDataContainer}>
+                {/* Profile Picture */}
+                <Image style={styles.profilePicture}
+                    source={{ uri: "https://media.istockphoto.com/id/1330214182/photo/happy-smiling-indian-farmer-counting-currency-notes-inside-the-greenhouse-or-polyhouse.jpg?s=1024x1024&w=is&k=20&c=22iXxp6H-_uD7p1Cgjusk65k26ndUlz6bV2okbA1Lkg=" }} />
+                {/* Farmer's Basic Details */}
+                <View style={styles.detailsContainer}>
+                    <Text style={styles.nameOfUser}>{user.name}</Text>
+                    <Text style={styles.detail}>Farmer</Text>
+                    <Text style={styles.detail}>{user.email}</Text>
+                    <Text style={styles.detail}>{user.phone}</Text>
+                </View>
             </View>
-            {/* Useful Links or Options */}
-            <FlatList
-                data={usefulLinks}
-                renderItem={({ item }) => (
-                    <TouchableOpacity style={styles.linkItem}>
-                        <Image source={item.icon} style={styles.linkIcon} />
-                        <Text style={styles.linkText}>{item.title}</Text>
-                    </TouchableOpacity>
-                )}
-                keyExtractor={(item) => item.id}
-                style={styles.linksContainer}
-            />
+
+            {/* Top Tabs for My Posts and Favorites */}
             <TouchableOpacity style={styles.logOutButton} onPress={logoutUser}>
-                <Text>{translations.logout}</Text>
+                <Text style={styles.logoutText}>{translations.logout|| "Logout"}</Text>
             </TouchableOpacity>
+            <View style={styles.tabsContainer}>
+                <ProfileTabs />
+            </View>
         </View>
     );
 };
 
-export default index;
+export default ProfileScreen;
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#f5f5f5',
-        padding: 20,
+        padding: 5,
         alignItems: 'center',
     },
-    animationContainer: {
-        width: 200,
-        height: 200,
-        marginTop: 20,
-    },
-    animation: {
-        width: '100%',
-        height: '100%',
+    userDataContainer:{
+        flexDirection:"row",
+        justifyContent:"center",
+        alignItems:"center"
     },
     detailsContainer: {
         alignItems: 'center',
@@ -80,49 +84,32 @@ const styles = StyleSheet.create({
         color: '#555',
         marginTop: 5,
     },
-    languageButton: {
-        marginTop: 30,
+    logOutButton: {
+        width: "90%",
+        backgroundColor: "black",
+        marginBottom: 20,
         padding: 10,
-        backgroundColor: '#4CAF50',
-        borderRadius: 5,
+        justifyContent: "center",
+        alignItems: "center"
     },
-    languageButtonText: {
-        fontSize: 16,
-        color: '#fff',
+    logoutText:{
+        color:'white'
+    },  
+    profilePicture: {
+        borderRadius: 50,
+        height: 100,
+        width: 100,
+        marginRight:50
     },
-    linksContainer: {
-        marginTop: 30,
+    tabsContainer: {
+        flex: 1,
         width: '100%',
+        marginTop: 0,
     },
-    linkItem: {
-        flexDirection: 'row',
+    tabContent: {
+        flex: 1,
+        justifyContent: 'center',
         alignItems: 'center',
-        padding: 15,
         backgroundColor: '#fff',
-        borderRadius: 5,
-        marginBottom: 10,
-        elevation: 2,
     },
-    linkIcon: {
-        width: 30,
-        height: 30,
-        marginRight: 20,
-    },
-    linkText: {
-        fontSize: 18,
-        color: '#333',
-    },
-    logOutButton:{
-        width:"90%",
-        backgroundColor:"orange",
-        marginBottom:40,
-        padding:10,
-        justifyContent:"center",
-        alignItems:"center"
-    },
-    profilePicture:{
-        borderRadius:50,
-        height:100,
-        width:100
-    }
 });

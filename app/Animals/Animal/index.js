@@ -3,9 +3,9 @@ import { View, StyleSheet, FlatList, Alert, ActivityIndicator, Text, RefreshCont
 import PostCard from '../../Components/Crops/CropsPostCard';
 import axios from 'axios';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useLanguage } from '../../context/LanguageContext';
+// import { useLanguage } from '../../context/LanguageContext';
 import { useLocation } from '../../context/LocationContext';
-import { Picker } from '@react-native-picker/picker';
+// import { Picker } from '@react-native-picker/picker';
 import {router} from 'expo-router'
 import {Entypo,FontAwesome6} from '@expo/vector-icons';
 import LocationModal from '../../Components/Location/locationModal';
@@ -49,9 +49,9 @@ const Index = () => {
   const [page, setPage] = useState(1); // Current page number
   const [totalPages, setTotalPages] = useState(1); // Total number of pages
   const [isRefreshing, setIsRefreshing] = useState(false); // Refreshing state for pull-to-refresh
-  const { language, translations, languageLoading, changeLanguage } = useLanguage();
+  // const { language, translations, languageLoading, changeLanguage } = useLanguage();
   const { location, locationName, fetchLocation } = useLocation();
-  const [selectedLanguage, setSelectedLanguage] = useState(null); // Keep track of selected language
+  // const [selectedLanguage, setSelectedLanguage] = useState(null); // Keep track of selected language
   const [isLocationModalVisible, setLocationModalVisible] = useState(false);
   const [posts,setPosts]=useState([]);
   const lat = 78.3906107;    // Replace with user's latitude
@@ -92,27 +92,27 @@ const Index = () => {
     fetchAnimalPostsData();
   }, []);
 
-  const fetchNearbyPosts = async () => {
-    if (!location) return;
+  // const fetchNearbyPosts = async () => {
+  //   if (!location) return;
 
-    // setLoading(true);
-    try {
-      const response = await axios.get(`http://192.168.0.113:5000/api/posts/nearby?lat=${lat}&lon=${lon}&radius=${radius}`);
-      console.log("nearby:",response.data)
-      setPosts(response.data.data);
-    } catch (error) {
-      console.log(error)
-      setError(error);
-    } finally {
-      // setLoading(false);
-    }
-  };
+  //   // setLoading(true);
+  //   try {
+  //     const response = await axios.get(`https://pashupanta-backend-production.up.railway.app/api/posts/nearby?lat=${lat}&lon=${lon}&radius=${radius}`);
+  //     console.log("nearby:",response.data)
+  //     setPosts(response.data.data);
+  //   } catch (error) {
+  //     console.log(error)
+  //     setError(error);
+  //   } finally {
+  //     // setLoading(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    if (location) {
-      fetchNearbyPosts(); // Fetch posts after location is obtained
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (location) {
+  //     fetchNearbyPosts(); // Fetch posts after location is obtained
+  //   }
+  // }, []);
 
   // Load more data when the user reaches the end of the list
   const loadMorePosts = () => {
@@ -128,11 +128,11 @@ const Index = () => {
   };
 
   // Sync selectedLanguage with the language from context after it's loaded
-  useEffect(() => {
-    if (!languageLoading && selectedLanguage !== language) {
-      setSelectedLanguage(language); // Only set selected language when language loading is done and it's different
-    }
-  }, [language, languageLoading]);
+  // useEffect(() => {
+  //   if (!languageLoading && selectedLanguage !== language) {
+  //     setSelectedLanguage(language); // Only set selected language when language loading is done and it's different
+  //   }
+  // }, [language, languageLoading]);
 
   // Render footer loading indicator for pagination
   const renderFooter = () => {
@@ -159,7 +159,7 @@ const Index = () => {
           </Pressable>
       </View>
         {/* Show Picker only after language has been loaded */}
-        {!languageLoading && (
+        {/* {!languageLoading && (
           <View style={styles.languagePicker}>
             <Picker
               selectedValue={selectedLanguage}
@@ -177,14 +177,14 @@ const Index = () => {
               <Picker.Item label="Punjabi (ਪੰਜਾਬੀ)" value="pa" />
             </Picker>
           </View>
-        )}
+        )} */}
       </View>
 
       <FlatList
         data={data}
         showsVerticalScrollIndicator={false}
         renderItem={renderItem}
-        keyExtractor={(item) => item._id || item.id} // Fallback key if _id is missing
+        keyExtractor={(item) => item._id} // Fallback key if _id is missing
         contentContainerStyle={styles.postContainer}
         onEndReached={loadMorePosts} // Pagination
         onEndReachedThreshold={0.9} // Trigger when the list is 90% from the bottom

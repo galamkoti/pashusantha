@@ -3,9 +3,13 @@ import { LanguageProvider } from './context/LanguageContext'
 import { LocationProvider } from './context/LocationContext';
 import { UserProvider } from './context/UserContext';
 import { SavePostProvider } from './context/SavePostContext';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const StackLayout = () => {
     return (
+        <BottomSheetModalProvider>
+        <GestureHandlerRootView>
         <UserProvider>
         <LanguageProvider>
             <LocationProvider>
@@ -21,6 +25,8 @@ const StackLayout = () => {
             </LocationProvider>
         </LanguageProvider>
         </UserProvider>
+        </GestureHandlerRootView>
+        </BottomSheetModalProvider>
     );
 }
 

@@ -1,6 +1,6 @@
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import React, { useState, useEffect } from 'react';
-import { useSavePost } from '../../../context/SavePostContext';
+import { useSavePost } from '../../context/SavePostContext';
 import { router } from 'expo-router';
 
 const FavoritesScreen = () => {

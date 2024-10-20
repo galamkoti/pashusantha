@@ -1,49 +1,125 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView, Image } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import { useUserData } from '../context/UserContext';
-import axios from 'axios';
-import { useLocation } from '../context/LocationContext';
+import { View, Text, StyleSheet, ScrollView, TextInput, Alert, Image, Pressable,Button, TouchableOpacity } from 'react-native';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useLanguage } from '../context/LanguageContext';
+import { CustomBottomSheetModal } from './../Components/Animal/CustomBottomSheetModal';
+import { useLocation } from '../context/LocationContext';
+import { useUserData } from '../context/UserContext';
 import * as ImagePicker from 'expo-image-picker'; 
+import ImagePickerModal from '../Components/Animal/ImagePickerModal';
+import axios from 'axios';
 
-const AnimalForm = () => {
-  const [category, setCategory] = useState('');
-  const [breed, setBreed] = useState('');
-  const [milkCapacity, setMilkCapacity] = useState('');
+const App = () => {
+  const { translations } = useLanguage();
+  const { user } = useUserData();
+  const { location } = useLocation();
+
+
+  // State for each modal option
+  const [category, setCategory] = useState(null);
+  const [breed, setBreed] = useState(null);
+  const [hasChild, setHasChild] = useState(null);
+  const [isBargainable, setIsBargainable] = useState(null);
   const [price, setPrice] = useState('');
-  const [pregnancyStatus, setPregnancyStatus] = useState('');
-  const [hasChild, setHasChild] = useState('');
+  const [milkCapacity, setMilkCapacity] = useState('');
   const [age, setAge] = useState('');
-  const [lactationPeriod, setLactationPeriod] = useState('');
-  const [isBargainable, setIsBargainable] = useState(false);
-  const {user}=useUserData();
-  const {location}=useLocation();
-  const {translations}=useLanguage();
-  const [images, setImages] = useState(null);
+  const [lactationPeriod, setLactationPeriod] = useState('');  
+  const [pregnancyStatus, setPregnancyStatus] = useState('');
+  const [images, setImages] = useState([null, null, null]);
   const [videos, setVideos] = useState([]);
+  const [imagePickerModalVisible, setImagePickerModalVisible] = useState(false);
+  const [selectedImageBox, setSelectedImageBox] = useState(null);
 
-  const pickImage = async () => {
-    const { status } = await ImagePicker.getMediaLibraryPermissionsAsync();
-    if (status != 'granted') {
-      Alert.alert('Permission Denied', 'We need camera roll permissions to proceed.');
-      return;
-    }
+  const openImagePickerModal = (boxIndex) => {
+    setSelectedImageBox(boxIndex);
+    setImagePickerModalVisible(true);
+  };
+
+  const closeImagePickerModal = () => {
+    setImagePickerModalVisible(false);
+  };
+
+  const animalCategories = [
+    { label: translations.cows || 'Cow', value: 'cow' },
+    { label: translations.buffalo || 'Buffalo', value: 'buffalo' },
+    { label: translations.sheep || 'Sheep', value: 'sheep' },
+    { label: translations.goat || 'Goat', value: 'goat' },
+  ];
+
+  const breedOptions = {
+    cow: [
+      { label: 'Holstein', value: 'holstein' },
+      { label: 'Jersey', value: 'jersey' },
+      { label: 'Guernsey', value: 'guernsey' },
+    ],
+    buffalo: [
+      { label: 'Murrah', value: 'murrah' },
+      { label: 'Nili-Ravi', value: 'nili-ravi' },
+      { label: 'Bhadawari', value: 'bhadawari' },
+    ],
+    sheep: [
+      { label: 'Dorset', value: 'dorset' },
+      { label: 'Hampshire', value: 'hampshire' },
+      { label: 'Suffolk', value: 'suffolk' },
+    ],
+    goat: [
+      { label: 'Nubian', value: 'nubian' },
+      { label: 'Alpine', value: 'alpine' },
+      { label: 'Saanen', value: 'saanen' },
+    ],
+  };
+
+  const hasChildOptions = [
+    { label: 'Yes', value: 'yes' },
+    { label: 'No', value: 'no' },
+  ];
+
+  const isBargainableOptions = [
+    { label: 'Bargainable', value: 'yes' },
+    { label: 'Not Bargainable', value: 'no' },
+  ];
+  const pregnancyOptions = [
+    { label: 'Pregnant', value: 'yes' },
+    { label: 'Not Pregnant', value: 'no' },
+  ];
+
+  // Handle category change: reset breed when category is changed
+  const handleCategoryChange = (value) => {
+    setCategory(value);
+    setBreed(null); // Reset the breed value when a new category is selected
+  };
+
+  const pickImageFromGallery = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 0.5,
     });
-    console.log(result);
-
     if (!result.canceled) {
-      // Append the selected image to the list of images
-      setImages(result.assets[0].uri);  // Adjusted to work with single selection
+      const newImages = [...images];
+      newImages[selectedImageBox] = result.assets[0].uri;
+      setImages(newImages);
     }
+    closeImagePickerModal();
   };
 
-      // Function to pick multiple videos
+  const pickImageFromCamera = async () => {
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.5,
+    });
+    if (!result.canceled) {
+      const newImages = [...images];
+      newImages[selectedImageBox] = result.assets[0].uri;
+      setImages(newImages);
+    }
+    closeImagePickerModal();
+  };
+
+
   const pickVideos = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
@@ -61,23 +137,6 @@ const AnimalForm = () => {
     }
   };
 
-  const animalCategories = [
-    { label: translations.cows|| 'Cow', value: 'cow' },
-    { label: translations.buffalo||'Buffalo', value: 'buffalo' },
-    { label: 'Sheep', value: 'sheep' },
-    { label: 'Goat', value: 'goat' }
-  ];
-  
-  const breedOptions = {
-    cow: ['Holstein', 'Jersey', 'Guernsey'],
-    buffalo: ['Murrah', 'Nili-Ravi', 'Bhadawari'],
-    sheep: ['Dorset', 'Hampshire', 'Suffolk'],
-    goat: ['Nubian', 'Alpine', 'Saanen']
-  };
-
-
-
-  // Function to submit the form
   const submitForm = async () => {
     const formData = {
       user_id:user._id,
@@ -100,12 +159,10 @@ const AnimalForm = () => {
     console.log("formData",formData);
 
     try {
-      const response = await axios.post('https://pashupanta-backend-production.up.railway.app/api/animal/create', {
-        method: 'POST',
+      const response = await axios.post('https://pashupanta-backend-production.up.railway.app/api/animal/create', formData, {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
       });
       console.log("response ",response)
       if (response.data.message=="Animal Post Created!!") {
@@ -115,189 +172,228 @@ const AnimalForm = () => {
         Alert.alert('Error', 'Something went wrong. Please try again.');
       }
     } catch (error) {
+      console.log("error",error.message)
       Alert.alert('Error', 'An error occurred while submitting the form.');
     }
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Add Animal Details</Text>
+    <BottomSheetModalProvider>
+      <GestureHandlerRootView>
+        <ScrollView style={styles.container}>
 
-      {/* Animal Category */}
-      <Text style={styles.label}>{translations.category}:</Text>
-      <View style={styles.picker}>
-      <Picker
-        selectedValue={category}
-        style={styles.picker}
-        onValueChange={(itemValue) => {
-          setCategory(itemValue);
-          setBreed(''); // Reset breed when category changes
-        }}
-      >
-        <Picker.Item label="Select Category" value="" />
-        {animalCategories.map((cat) => (
-          <Picker.Item key={cat.value} label={cat.label} value={cat.value} />
-        ))}
-      </Picker>
-      </View>
-      
-        
+          {/* Category Modal */}
+          <View style={styles.row}>
+            <Text style={styles.label}>Category:</Text>
+            <View style={styles.dropdownContainer}>
+              <CustomBottomSheetModal
+                data={animalCategories}
+                modalTitle="Select Category"
+                selectedValue={category}  // Pass the selected value to change the label dynamically
+                onValueSelected={handleCategoryChange}
+              />
+             
+            </View>
+          </View>
 
-      {/* Breed */}
-      <Text style={styles.label}>{translations.breed}:</Text>
-      <View style={styles.picker}>
-      <Picker
-        selectedValue={breed}
-        style={styles.picker}
-        enabled={category !== ''}
-        onValueChange={(itemValue) => setBreed(itemValue)}
-      >
-        <Picker.Item label="Select Breed" value="" />
-        {breedOptions[category]?.map((br) => (
-          <Picker.Item key={br} label={br} value={br} />
-        ))}
-      </Picker>
-      </View>
+          {/* Breed Modal - Dependent on selected category */}
+          {category && (
+            <View style={styles.row}>
+              <Text style={styles.label}>Breed:</Text>
+              <View style={styles.dropdownContainer}>
+                <CustomBottomSheetModal
+                  data={breedOptions[category] || []}  // Empty array if no category
+                  modalTitle="Select Breed"
+                  selectedValue={breed}  // Update the label after breed is selected
+                  onValueSelected={(value) => setBreed(value)}
+                />
+              </View>
+            </View>
+          )}
 
-      {/* Milk Capacity */}
-      <Text style={styles.label}>{translations.milk_capacity} ({translations.litres}):</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Milk Capacity (Liters)"
-        keyboardType="numeric"
-        value={milkCapacity}
-        onChangeText={(text) => setMilkCapacity(text)}
-      />
+          {/* Price */}
+          <View style={styles.row}>
+            <Text style={styles.label}>Price:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder='Enter Price'
+              keyboardType='number-pad'
+              value={price}
+              onChangeText={(text) => setPrice(text)}
+            />
+          </View>
 
-      {/* Price */}
-      <Text style={styles.label}>{translations.select_price}:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Price (in $)"
-        keyboardType="numeric"
-        value={price}
-        onChangeText={(text) => setPrice(text)}
-      />
+          {/* Milk Capacity */}
+          <View style={styles.row}>
+            <Text style={styles.label}>Milk Capacity:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder='Enter Milk Capacity'
+              keyboardType='number-pad'
+              value={milkCapacity}
+              onChangeText={(text) => setMilkCapacity(text)}
+            />
+          </View>
 
-      {/* Pregnancy Status */}
-      <Text style={styles.label}>{translations.pregnacy_status}:</Text>
-      <View style={styles.picker}>
-      <Picker
-        selectedValue={pregnancyStatus}
-        style={styles.picker}
-        onValueChange={(itemValue) => setPregnancyStatus(itemValue)}
-      >
-        <Picker.Item label="Select Status" value="" />
-        <Picker.Item label="Pregnant" value="Pregnant" />
-        <Picker.Item label="Not Pregnant" value="Not Pregnant" />
-      </Picker>
-      </View>
+          {/* Age */}
+          <View style={styles.row}>
+            <Text style={styles.label}>{translations.pashu_age} (Years):</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Age (Years)"
+              keyboardType="numeric"
+              value={age}
+              onChangeText={(text) => setAge(text)}
+            />
+          </View>
 
-      {/* Has Child */}
-      <Text style={styles.label}>{translations.child_status}:</Text>
-      <View style={styles.picker}>
-      <Picker
-        selectedValue={hasChild}
-        style={styles.picker}
-        onValueChange={(itemValue) => setHasChild(itemValue)}
-      >
-        <Picker.Item label="Select" value="" />
-        <Picker.Item label="Yes" value="Yes" />
-        <Picker.Item label="No" value="No" />
-      </Picker>
-      </View>
+          {/* Pregnancy Modal */}
+          <View style={styles.row}>
+            <Text style={styles.label}>Pregnancy:</Text>
+            <View style={styles.dropdownContainer}>
+              <CustomBottomSheetModal
+                data={pregnancyOptions}
+                modalTitle="IsPregnant"
+                selectedValue={isBargainable}  // Dynamically change label after selection
+                onValueSelected={(value) => setPregnancyStatus(value)}
+              />
+            </View>
+          </View>
 
-      {/* Age */}
-      <Text style={styles.label}>{translations.pashu_age} (Years):</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Age (Years)"
-        keyboardType="numeric"
-        value={age}
-        onChangeText={(text) => setAge(text)}
-      />
+          {/* Has Child Modal */}
+          <View style={styles.row}>
+            <Text style={styles.label}>Has Child:</Text>
+            <View style={styles.dropdownContainer}>
+              <CustomBottomSheetModal
+                data={hasChildOptions}
+                modalTitle="Has Child"
+                selectedValue={hasChild}  // Dynamically change label after selection
+                onValueSelected={(value) => setHasChild(value)}
+              />
+            </View>
+          </View>
 
-      {/* Lactation Period */}
-      <Text style={styles.label}>{translations.lactation_period} (Months):</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Lactation Period (Months)"
-        keyboardType="numeric"
-        value={lactationPeriod}
-        onChangeText={(text) => setLactationPeriod(text)}
-      />
+          {/* Lactation Period */}
+          <View style={styles.row}>
+            <Text style={styles.label}>{translations.lactation_period} (Months):</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Lactation Period (Months)"
+              keyboardType="numeric"
+              value={lactationPeriod}
+              onChangeText={(text) => setLactationPeriod(text)}
+            />
+          </View>
 
-      {/* Is Bargainable */}
-      <Text style={styles.label}>{translations.can_bargain}:</Text>
-      <View style={styles.picker}>
-      <Picker
-        selectedValue={isBargainable ? 'Yes' : 'No'}
-        style={styles.picker}
-        onValueChange={(itemValue) => setIsBargainable(itemValue === 'Yes')}
-      >
-        <Picker.Item label="Select" value="" />
-        <Picker.Item label="Yes" value="Yes" />
-        <Picker.Item label="No" value="No" />
-      </Picker>
-      </View>
-      
-      <Button title="Pick Images" onPress={pickImage} />
-      <Button title="Pick Videos" onPress={pickVideos} />
+          {/* Bargainable Modal */}
+          <View style={styles.row}>
+            <Text style={styles.label}>Bargainable:</Text>
+            <View style={styles.dropdownContainer}>
+              <CustomBottomSheetModal
+                data={isBargainableOptions}
+                modalTitle="Bargainable"
+                selectedValue={isBargainable}  // Dynamically change label after selection
+                onValueSelected={(value) => setIsBargainable(value)}
+              />
+            </View>
+          </View>
+          {/* images */}
 
-      {/* Display selected images */}
-      {images && <Image source={{ uri: images }} style={styles.image} />}
-      {/* {images.length > 0 && (
-        <View>
-          {images.map((image, index) => (
-            <Image key={index} source={{ uri: image.uri }} style={{ width: 100, height: 100 }} />
-          ))}
-        </View>
-      )} */}
-      {/* Submit Button */}
-      <Button title="Submit" onPress={submitForm} color="#4CAF50" />
-    </ScrollView>
+          <View style={styles.imageContainer}>
+            {images.map((image, index) => (
+              <Pressable
+                key={index}
+                style={styles.imageBox}
+                onPress={() => openImagePickerModal(index)}
+              >
+                {image ? (
+                  <Image source={{ uri: image }} style={styles.image} />
+                ) : (
+                  <Text style={styles.placeholderText}>Upload Image {index + 1}</Text>
+                )}
+              </Pressable>
+            ))}
+          </View>
+          {/* Image Picker Modal */}
+          <ImagePickerModal
+            visible={imagePickerModalVisible}
+            onClose={closeImagePickerModal}
+            onCameraPress={pickImageFromCamera}
+            onGalleryPress={pickImageFromGallery}
+          />
+
+            <TouchableOpacity onPress={submitForm} style={{backgroundColor:"green",marginBottom:50,padding:10,justifyContent:"center",alignItems:"center"}}>
+              <Text style={{color:"white",fontSize:20,fontWeight:"bold"}}>Submit</Text>
+            </TouchableOpacity>
+        </ScrollView>
+      </GestureHandlerRootView>
+    </BottomSheetModalProvider>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    flex: 1,
+    padding: 16,
     backgroundColor: '#f8f8f8',
   },
-  image: {
-    width: 200,
-    height: 200,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginVertical: 10,
   },
   label: {
     fontSize: 16,
     fontWeight: '600',
-    marginTop: 15,
-    marginBottom: 5,
+    color: '#333',
+    flex: 1,
   },
   input: {
+    flex: 1.5,
     borderWidth: 1,
     borderColor: '#ccc',
-    padding: 10,
-    borderRadius: 5,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
     fontSize: 16,
+    backgroundColor: '#fff',
   },
-  picker: {
+  dropdownContainer: {
+    flex: 1.5,
     borderWidth: 1,
     borderColor: '#ccc',
-    marginTop: 5,
-    marginBottom:4
+    borderRadius: 8,
+    paddingVertical: 0,
+    paddingHorizontal: 12,
+    backgroundColor: '#fff',
+    flexDirection:"row",
+    justifyContent:"center",
+    alignItems:"center"
   },
-  fileInfo: {
-    marginTop: 5,
-    marginBottom: 20,
-    fontStyle: 'italic',
+  imageContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 20,
+  },
+  imageBox: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    backgroundColor: '#ccc',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  placeholderText: {
+    color: '#fff',
+    fontSize: 12,
+    textAlign: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 10,
   },
 });
 
-export default AnimalForm;
+export default App;

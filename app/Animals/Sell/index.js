@@ -2,13 +2,13 @@ import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity , SafeAreaVie
 import React from 'react';
 import { router} from 'expo-router';
 import {useLanguage} from '../../context/LanguageContext'
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 const index = () => {
   const {  translations } = useLanguage();
   const handleWhatsApp = () => {
     // Redirect to WhatsApp with pre-filled message
-    let url = `whatsapp://send?phone=${7981787912}&text=${translations.sell_on_whatsapp||"Hello, I want to sell my cattle"}`;
+    let url = `whatsapp://send?phone=${6309065662}&text=${translations.sell_on_whatsapp||"Hello, I want to sell my cattle"}`;
     Linking.openURL(url).catch(() => {
         alert('Make sure WhatsApp is installed on your device');
     });
@@ -21,8 +21,14 @@ const index = () => {
       <Image source={require('../../../assets/sell/animal.jpg')} style={styles.image} />
       <Text style={styles.title}>{translations.sell_animal||'Sell Animals'}</Text>
     </TouchableOpacity>
+      {/* <TouchableOpacity style={styles.categoryContainer} onPress={()=>{
+      router.push({pathname:`/forms/crops`})
+    }}>
+      <Image source={require('../../../assets/sell/animal.jpg')} style={styles.image} />
+      <Text style={styles.title}>{translations.sell_crop||'Sell crops'}</Text>
+    </TouchableOpacity> */}
       <TouchableOpacity style={styles.categoryContainer} onPress={handleWhatsApp}>
-                <FontAwesome name="whatsapp" size={100} color="green" />
+                <FontAwesome5 name="whatsapp-square" size={150} color="green" />
                 <Text style={styles.title}>{translations.sell_pashu_using_whatsapp}</Text>
             </TouchableOpacity>
     </SafeAreaView>
