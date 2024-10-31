@@ -1,28 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity,Pressable, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useLanguage } from '../../context/LanguageContext';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import HorizontalLine from "./../common/HorizontalLine"
+import { BannerAd, BannerAdSize, TestIds, useForeground } from 'react-native-google-mobile-ads';
 
-const PostCard = ({ category, breed, distance, datePosted, image, userName, description, onCallPress , onPostPressed }) => {
+const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-7503444463934319/7517812846';
+
+const PostCard = ({ category, breed, distance, datePosted, image,price, userName, description, onCallPress , onPostPressed }) => {
   const {translations} = useLanguage();
 
   const formattedDate = new Date(datePosted).toLocaleDateString(); // Convert datePosted to readable format
+  
+  const bannerRef = useRef(null);
 
   return (
+    <>
     <Pressable style={styles.card} onPress={onPostPressed}>
       {/* Category and Distance */}
       <View style={styles.header}>
         <View style={styles.headerRowContainer}>
-          <Text style={styles.category}>{category=='cow'?translations.cows:
-                                      category=='buffalo'?translations.buffalo:
-                                      category=='goat'?translations.goats:
-                                      category=='sheep'?translations.sheeps:
-                                      category=='hen'?translations.hens:category}</Text>
-          <Text style={styles.category}>  ({breed})</Text>
+        <Text style={styles.userName}>{translations[category] || category} {translations.for_sale} - {translations[breed] || breed} {translations.belongs_to_breed}</Text>
         </View>
-        <Text style={styles.distance}>
-          {translations.buy|| "Buy"}
-        </Text>
+        {/* <Text style={styles.distance}>
+          2.{translations.km}
+        </Text> */}
       </View>
 
       {/* Single Image Display */}
@@ -31,24 +34,18 @@ const PostCard = ({ category, breed, distance, datePosted, image, userName, desc
       {/* User Details and Call Option */}
       <View style={styles.footer}>
         <View>
-          <Text style={styles.userName}>{description}</Text>
+        
           <Text style={styles.datePosted}>Posted on {formattedDate}</Text>
         </View>
         <View style={styles.callHeartContainer}>
-          <TouchableOpacity onPress={onCallPress} style={styles.callButton}>
-            <Ionicons name="call" size={24} color="white" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              Alert.alert('Clicked Heart');
-            }}
-            style={styles.heartButton}
-          >
-            <Ionicons name="heart" size={24} color="white" />
-          </TouchableOpacity>
+          <FontAwesome5 name="rupee-sign" size={24} color="black" />
+          <Text style={styles.priceText}>{price}</Text>
         </View>
       </View>
     </Pressable>
+      {/* <BannerAd ref={bannerRef} unitId={adUnitId} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} /> */}
+     
+    </>
   );
 };
 
@@ -59,8 +56,17 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     width: '100%',
     padding: 10,
-    marginBottom: 10,
+    marginBottom: 30,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 10,
   },
+  priceText:{
+    fontSize:24,
+    fontWeight:"bold"
+  },  
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -92,8 +98,8 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   datePosted: {
-    fontSize: 12,
-    color: '#777',
+    fontSize: 16,
+    color: 'black',
   },
   callButton: {
     backgroundColor: '#28a745',
@@ -109,6 +115,8 @@ const styles = StyleSheet.create({
   },
   callHeartContainer: {
     flexDirection: 'row',
+    justifyContent:"center",
+    alignItems:"center"
   },
   headerRowContainer:{
     justifyContent:"space-around",

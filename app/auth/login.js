@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, Alert, Image,StyleSheet } from 'react-native';
+import { View, TextInput, Button, Text, Alert, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { useUserData } from '../context/UserContext';
-import {useLanguage} from '../context/LanguageContext'
+import { useLanguage } from '../context/LanguageContext'
 
 const PhoneAuthScreen = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [code, setCode] = useState('');
   const [verificationSent, setVerificationSent] = useState(false);
   const [message, setMessage] = useState('');
-  const {loginUser}=useUserData();
-  const {translations}=useLanguage();
+  const { loginUser } = useUserData();
+  const { translations } = useLanguage();
 
   // Send OTP to the user's phone number
   const sendOTP = async () => {
@@ -64,39 +64,78 @@ const PhoneAuthScreen = () => {
   };
 
   return (
-    <View style={{ padding: 20, flex: 1, justifyContent: 'center' }}>
+    <View style={{ padding: 20, flex:1, justifyContent: 'center', backgroundColor: "#fff" }}>
       {!verificationSent ? (
         <>
-          <Image source={require("../../assets/logo.jpg")} style={styles.logo} />
-          <Text>{ translations.login_with_mobile||'Login With Mobile'}</Text>
-          <TextInput
-            placeholder="Enter phone number"
-            value={phoneNumber}
-            onChangeText={setPhoneNumber}
-            keyboardType="phone-pad"
-            style={{
-              borderBottomWidth: 1,
-              borderBottomColor: '#000',
-              marginBottom: 20,
-            }}
-          />
-          <Button title="Send OTP" onPress={sendOTP} />
+          <View style={{ flexDirection: "column", alignItems: "center" }}>
+            <Image source={require("../../assets/logo.jpg")} style={styles.logo} />
+            <Text style={{ fontSize: 24, fontWeight: "bold", margin: 20 }}>{translations.login_with_mobile || "Login With Phone Number"}</Text>
+            <TextInput
+              placeholder={translations.enter_mobile_number ||"Enter phone number"}
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
+              keyboardType="phone-pad"
+              style={{
+                borderWidth: 1,
+                borderBottomColor: 'gray',
+                marginBottom: 20,
+                borderRadius: 10,
+                padding: 10,
+                width: "90%"
+              }}
+            />
+            <TouchableOpacity onPress={sendOTP} style={{ width: "90%", 
+                backgroundColor: "black", 
+                justifyContent: "center",
+                alignItems: "center", 
+                borderWidth: 1,
+                borderBottomColor: 'gray',
+                marginBottom: 20,
+                borderRadius: 10,
+                padding: 10,}}>
+              <Text style={{ color: "white" }}>{translations.get_otp||"Send Otp"}</Text>
+            </TouchableOpacity>
+          </View>
         </>
       ) : (
         <>
+        <Text style={{ fontSize: 26, fontWeight: "bold", margin: 40 }}>{translations.please_verify_your_otp||"Please Verify Your OTP"}</Text>
           <TextInput
             placeholder="Enter OTP"
             value={code}
             onChangeText={setCode}
             keyboardType="number-pad"
             style={{
-              borderBottomWidth: 1,
-              borderBottomColor: '#000',
-              marginBottom: 20,
+              borderWidth: 1,
+                borderBottomColor: 'gray',
+                marginBottom: 20,
+                borderRadius: 10,
+                padding: 10,
+                width: "90%"
             }}
           />
-          <Button title="Verify OTP" onPress={verifyOTP} />
-          <Button title="Send OTP Again" onPress={()=>{}} />
+          <TouchableOpacity onPress={verifyOTP} style={{ width: "90%", 
+                backgroundColor: "black", 
+                justifyContent: "center",
+                alignItems: "center", 
+                borderWidth: 1,
+                borderBottomColor: 'gray',
+                marginBottom: 20,
+                borderRadius: 10,
+                padding: 10,}}>
+              <Text style={{ color: "white" }}>{translations.verify_otp||"Verify OTP"}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={()=>[]} style={{ width: "90%", 
+                backgroundColor: "black", 
+                justifyContent: "center",
+                alignItems: "center", 
+                borderWidth: 1,
+                borderBottomColor: 'gray',
+                marginBottom: 20,
+                borderRadius: 10,
+                padding: 10,}}>
+              <Text style={{ color: "white" }}>{translations.send_otp_again||"Send OTP Again"}</Text>
+            </TouchableOpacity>
         </>
       )}
 
@@ -107,11 +146,12 @@ const PhoneAuthScreen = () => {
 
 export default PhoneAuthScreen;
 
-const styles=StyleSheet.create({
-  logo:{
-    height:150,
-    width:200,
-    borderRadius:50,
-    justifyContent:"center",
+const styles = StyleSheet.create({
+  logo: {
+    height: 200,
+    width: 300,
+    borderRadius: 50,
+    justifyContent: "center",
+
   }
 })

@@ -6,7 +6,7 @@ const LanguageContext = createContext();
 
 const fetchTranslationsFromAPI = async (lang) => {
     try {
-        const response = await axios.get(`https://pashupanta-backend-production.up.railway.app/language?lng=${lang}`);
+        const response = await axios.get(`http://192.168.47.35:5000/language?lng=${lang}`);
         const data = response.data;
         return data;
     } catch (error) {

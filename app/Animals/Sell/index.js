@@ -8,7 +8,7 @@ const index = () => {
   const {  translations } = useLanguage();
   const handleWhatsApp = () => {
     // Redirect to WhatsApp with pre-filled message
-    let url = `whatsapp://send?phone=${6309065662}&text=${translations.sell_on_whatsapp||"Hello, I want to sell my cattle"}`;
+    let url = `whatsapp://send?phone=${7981787912}&text=${translations.sell_on_whatsapp||"Hello, I want to sell my cattle"}`;
     Linking.openURL(url).catch(() => {
         alert('Make sure WhatsApp is installed on your device');
     });
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   categoryContainer: {
-    flex: 1,
+    height:300,
     margin: 10,
     borderRadius: 10,
     backgroundColor: '#ffffff',
