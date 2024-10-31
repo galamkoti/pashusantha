@@ -39,11 +39,11 @@ export default () => {
                 title: translations.animals||'Animals',
                 tabBarIcon: ({ color, size }) => 
                   <MaterialCommunityIcons name="cow" size={size} color={color} />
-            }} />
+            }}/>
             <Tabs.Screen name="Sell" options={{
                 title: translations.sell||'Sell',
                 tabBarIcon: ({ color, size }) => (
-                    <View style={[styles.sellIconContainer, { backgroundColor: 'black' }]}>
+                    <View style={[styles.sellIconContainer, { backgroundColor: 'black' ,marginBottom:10}]}>
                       <Feather name="plus-circle" size={size + 15} color="#fff" />
                     </View>
                   ),

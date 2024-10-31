@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Pressable,ScrollView, Alert } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useUserData } from '../../context/UserContext';
 import { useLanguage } from '../../context/LanguageContext';
-import MyPosts from "./MyPosts";
-import favorites from "./favorites";
+import {MaterialIcons,Entypo} from '@expo/vector-icons';
+import { router } from 'expo-router';
+
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -26,12 +27,28 @@ const ProfileTabs = () => {
     );
 };
 
+
 const ProfileScreen = () => {
     const { translations } = useLanguage();
     const { user, logoutUser } = useUserData();
 
+    const handleLogout=()=>{
+        Alert.alert("Logging Out", "Are You Sure to Logout?", [
+            {
+                text: "CANCEL",
+                onPress: () => console.log("Logout Cancel Pressed"),
+                style: "cancel"
+            },
+            {
+                text: "LOGOUT",
+                onPress: () => logoutUser(),
+                style: "default"
+            }
+        ])
+    }
+
     return (
-        <View style={styles.container}>
+        <ScrollView  contentContainerStyle={styles.container}>
             <View style={styles.userDataContainer}>
                 {/* Profile Picture */}
                 <Image style={styles.profilePicture}
@@ -45,14 +62,33 @@ const ProfileScreen = () => {
                 </View>
             </View>
 
+            <View style={styles.lineStyling} ></View>
+
             {/* Top Tabs for My Posts and Favorites */}
-            <TouchableOpacity style={styles.logOutButton} onPress={logoutUser}>
+
+            <View style={styles.tabsContainer}>
+                {/* <ProfileTabs /> */}
+                <Pressable style={styles.containerRow} onPress={()=>router.push("common/MyPosts")}>
+                <Entypo name="images" size={24} color="black" style={styles.iconStyle}/>
+                    <Text style={styles.detail}>{  translations.my_posts||"My Posts"}</Text>
+                </Pressable>
+                <Pressable style={styles.containerRow}  onPress={()=>router.push("common/favorites")}>
+                    <MaterialIcons name="favorite" size={24} color="black" style={styles.iconStyle} />
+                    <Text>{translations.saved_posts || "Saved Posts" }</Text>
+                </Pressable>
+                <Pressable style={styles.containerRow} onPress={()=>router.push("common/notifications")}>
+                <MaterialIcons name="notifications-on" size={24} color="black"  style={styles.iconStyle}/>
+                    <Text>{translations.notifications|| "Notifications" }</Text>
+                </Pressable>
+                <Pressable style={styles.containerRow} onPress={()=>router.push("common/settings")}>
+                <MaterialIcons name="settings" size={24} color="black"  style={styles.iconStyle}/>
+                    <Text>{translations.settings|| "Settings" }</Text>
+                </Pressable>
+            </View>
+            <TouchableOpacity style={styles.logOutButton} onPress={()=>handleLogout()}>
                 <Text style={styles.logoutText}>{translations.logout|| "Logout"}</Text>
             </TouchableOpacity>
-            <View style={styles.tabsContainer}>
-                <ProfileTabs />
-            </View>
-        </View>
+        </ScrollView>
     );
 };
 
@@ -63,7 +99,22 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#f5f5f5',
         padding: 5,
-        alignItems: 'center',
+        alignItems:"center"
+    },
+    lineStyling:{
+        width : "90%",
+        height:1,
+        borderWidth:0.5,
+        borderColor:"gray",
+        margin:10
+    },
+    iconStyle:{
+        marginRight:40
+    },
+    containerRow:{
+        flexDirection:"row",
+        width:"90%",
+        margin:15
     },
     userDataContainer:{
         flexDirection:"row",
@@ -87,7 +138,7 @@ const styles = StyleSheet.create({
     logOutButton: {
         width: "90%",
         backgroundColor: "black",
-        marginBottom: 20,
+        marginBottom: 50,
         padding: 10,
         justifyContent: "center",
         alignItems: "center"
@@ -102,9 +153,10 @@ const styles = StyleSheet.create({
         marginRight:50
     },
     tabsContainer: {
-        flex: 1,
-        width: '100%',
+        flex:1,
         marginTop: 0,
+        width:"90%",
+        alignItems:"center"
     },
     tabContent: {
         flex: 1,

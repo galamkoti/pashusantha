@@ -1,10 +1,13 @@
 import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Pressable } from 'react-native';
 import {
+  BottomSheetFlatList,
   BottomSheetModal,
   BottomSheetView,
 } from '@gorhom/bottom-sheet';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
+import Feather from '@expo/vector-icons/Feather'; 
 
 
 export const CustomBottomSheetModal = ({ data, onValueSelected, modalTitle, selectedValue }) => {
@@ -44,6 +47,7 @@ export const CustomBottomSheetModal = ({ data, onValueSelected, modalTitle, sele
     const isSelected = commonValue === item.value;
 
     return (
+      // <ScrollView showsHorizontalScrollIndicator={false}>
       <Pressable style={styles.itemContainer} onPress={() => handleSelect(item.value)}>
         <View style={styles.radioContainer}>
           <View style={[styles.radioButton, isSelected && styles.radioButtonSelected]} />
@@ -54,7 +58,7 @@ export const CustomBottomSheetModal = ({ data, onValueSelected, modalTitle, sele
   };
 
   return (
-    <View style={styles.container}>
+    <GestureHandlerRootView style={styles.container}>
       <TouchableOpacity onPress={openModal} style={{ flexDirection:"row"}}>
         {/* Display selected value or modal title */}
         <Text style={styles.openButtonText}>
@@ -74,8 +78,8 @@ export const CustomBottomSheetModal = ({ data, onValueSelected, modalTitle, sele
           <View style={styles.header}>
             {/* Display the modal title */}
             <Text style={styles.headerTitle}>{modalTitle}</Text>
-            <TouchableOpacity onPress={handleClose}>
-              <Text style={styles.closeText}>X</Text>
+            <TouchableOpacity onPress={handleClose} style={{marginRight:10}}>
+            <Feather name="x-circle" size={30} color="black" />
             </TouchableOpacity>
           </View>
 
@@ -83,10 +87,12 @@ export const CustomBottomSheetModal = ({ data, onValueSelected, modalTitle, sele
             data={data}
             keyExtractor={(item, index) => index.toString()}
             renderItem={renderItem}
+            showsVerticalScrollIndicator={false}
           />
         </BottomSheetView>
+        
       </BottomSheetModal>
-    </View>
+    </GestureHandlerRootView>
   );
 };
 

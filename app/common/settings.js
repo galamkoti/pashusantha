@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const otpverify = () => {
+const settings = () => {
   return (
     <View>
-      <Text>otpverify</Text>
+      <Text>settings</Text>
     </View>
   )
 }
 
-export default otpverify
+export default settings

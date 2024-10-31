@@ -36,7 +36,7 @@ export const LocationProvider = ({ children }) => {
             console.log("a", address)
             if (address.length > 0) {
                 const addressDetails = address[0];
-                const formattedAddress = ` ${addressDetails.city || ''}`;
+                const formattedAddress = ` ${addressDetails.district || ''}`;
                 console.log("add", formattedAddress)
                 setLocationName(formattedAddress);
             }

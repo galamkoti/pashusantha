@@ -1,34 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, Alert, ActivityIndicator, Text, RefreshControl } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, StyleSheet, FlatList, Alert, ActivityIndicator, Text, RefreshControl, Image } from 'react-native';
 import axios from 'axios';
-import { useUserData } from '../../context/UserContext';
-import MyPostCard from '../../Components/Animal/MyPostCard';
+import { useUserData } from '../context/UserContext';
+import MyPostCard from '../Components/Animal/MyPostCard';
 import { router } from 'expo-router';
-
-// Render function for PostCard
-const renderItem = ({ item }) => {
-  const createdAt = item.createdAt?.$date?.$numberLong || Date.now(); // Fallback to current time if undefined
-  const imageUrl = item.images?.[0] || 'https://via.placeholder.com/200'; // Fallback image if not available
-  const phoneNumber = item.phone.toString() || 'phone number not available'; // Fallback if phone is not available
-
-  return (
-    <MyPostCard
-      category={item.animalType || 'Unknown'}
-      distance={item.distance || 'N/A'} // Handle distance gracefully
-      datePosted={item.createdAt} // Convert timestamp to a readable format
-      image={imageUrl}
-      userName={item.user || 'Anonymous'}
-      description={item.description}
-      breed={item.breed}
-      onCallPress={() => handleCallPress(phoneNumber)}
-      onPostPressed={()=> handlePostPress(item)}
-    />
-  );
-};
-const handlePostPress = (item) => {
-  console.log("pressed on post",item)
-  router.push({pathname:`common/animalPostDetails`,params:item})
-};
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import {Video,ResizeMode} from 'expo-av'
 
 const Index = () => {
   const [data, setData] = useState([]);
@@ -38,7 +15,59 @@ const Index = () => {
   const [totalPages, setTotalPages] = useState(1);  // Total number of pages
   const [isRefreshing, setIsRefreshing] = useState(false);  // Refreshing state for pull-to-refresh
   const {user}=useUserData();
+  const videoRef=useRef(null);
   console.log("user in myposts",user._id)
+
+  useEffect(()=>{
+    if(videoRef.current){
+      videoRef.current.playAsync();
+    }
+  },[])
+
+  // Render function for PostCard
+const renderItem = ({ item }) => {
+  const createdAt = item.createdAt?.$date?.$numberLong || Date.now(); // Fallback to current time if undefined
+  const imageUrl = item.images?.[0] || 'https://via.placeholder.com/200'; // Fallback image if not available
+  const phoneNumber = item.phone.toString() || 'phone number not available'; // Fallback if phone is not available
+
+  return (
+    <MyPostCard
+      category={item.animalType || 'Unknown'}
+      post_id={item._id}
+      price={item.price}
+      distance={item.distance || 'N/A'} // Handle distance gracefully
+      datePosted={item.createdAt} // Convert timestamp to a readable format
+      image={imageUrl}
+      userName={item.user || 'Anonymous'}
+      description={item.description}
+      breed={item.breed}
+      onCallPress={() => handleCallPress(phoneNumber)}
+      onPostPressed={()=> handlePostPress(item)}
+      confirmDeletePost= { ()=>confirmDeletePost(item._id)}
+    />
+  );
+};
+
+const confirmDeletePost = async(post_id) =>{
+  try {
+    const result = await axios.delete(`http://192.168.47.35:5000/api/posts/delete/${post_id}`);
+    // const {data}=result.data;
+    console.log("data of deletion",result);
+    if(result.status==201){
+      
+      Alert.alert(result.data.message);
+      const afterDeletedata=data.filter((item)=>item._id!=post_id);
+      setData(afterDeletedata);
+    }
+
+  } catch (error) {
+    console.log("error while deleting post",error);
+  }
+}
+const handlePostPress = (item) => {
+  console.log("pressed on post",item)
+  router.push({pathname:`common/animalPostDetails`,params:item})
+};
 
   // Fetch data function (handles both initial fetch and pagination)
   const fetchAnimalPostsData = async (pageNumber = 1, isRefreshing = false) => {
@@ -46,7 +75,7 @@ const Index = () => {
     setLoading(true);
 
     try {
-      const response = await axios.get(`https://pashupanta-backend-production.up.railway.app/api/posts/myposts/user/${user._id}?page=${pageNumber}`);
+      const response = await axios.get(`http://192.168.47.35:5000/api/posts/myposts/user/${user._id}?page=${pageNumber}`);
       const { data: fetchedData, totalPages: serverTotalPages } = response.data;
       console.log("myposts",fetchedData)
       if (pageNumber === 1) {
@@ -89,25 +118,35 @@ const Index = () => {
     return <ActivityIndicator size="large" color="#0000ff" />;
   };
 
+
+
   if (loading && page === 1) return <ActivityIndicator size="large" color="#0000ff" />; // Show loading indicator only for initial load
   if (error) return <Text>Error: {error.message}</Text>;
 
   return (
     <View style={styles.mainContainer}>
+      {data.length>0?
       <FlatList
         data={data}
         showsVerticalScrollIndicator={false}
         renderItem={renderItem}
-        keyExtractor={(item) => item._id || item.id} // Fallback key if _id is missing
+        keyExtractor={(item) => item._id} // Fallback key if _id is missing
         contentContainerStyle={styles.postContainer}
-        numColumns={2}
         onEndReached={loadMorePosts} // Pagination
         onEndReachedThreshold={0.9} // Trigger when the list is 90% from the bottom
         ListFooterComponent={renderFooter} // Show loading spinner at the bottom when loading more
         refreshControl={
           <RefreshControl refreshing={isRefreshing} onRefresh={refreshPosts} /> // Pull-to-refresh
         }
+      />:
+      <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
+        <Image
+        source={{ uri: 'https://media.giphy.com/media/11qwfyd5mTJvDa/giphy.gif' }}
+        style={styles.no_posts_video}
       />
+        <Text style={{fontSize:24,fontWeight:"bold"}}>No Posts From You</Text>
+      </View>}
+      
     </View>
   );
 };
@@ -120,8 +159,12 @@ const styles = StyleSheet.create({
   },
   postContainer: {
     padding: 10,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#fff',
   },
+  no_posts_video:{
+    height:300,
+    width:300,
+  }
 });
 
 export default Index;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, Alert, Image, Pressable,Button, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, Alert, Image, Pressable,Button, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useLanguage } from '../context/LanguageContext';
@@ -27,9 +27,10 @@ const App = () => {
   const [lactationPeriod, setLactationPeriod] = useState('');  
   const [pregnancyStatus, setPregnancyStatus] = useState('');
   const [images, setImages] = useState([null, null, null]);
-  const [videos, setVideos] = useState([]);
   const [imagePickerModalVisible, setImagePickerModalVisible] = useState(false);
   const [selectedImageBox, setSelectedImageBox] = useState(null);
+  const [video, setVideo] = useState(null);
+  const [loading,setLoading]=useState(null);
 
   const openImagePickerModal = (boxIndex) => {
     setSelectedImageBox(boxIndex);
@@ -46,29 +47,62 @@ const App = () => {
     { label: translations.sheep || 'Sheep', value: 'sheep' },
     { label: translations.goat || 'Goat', value: 'goat' },
   ];
-
+  
   const breedOptions = {
     cow: [
-      { label: 'Holstein', value: 'holstein' },
-      { label: 'Jersey', value: 'jersey' },
-      { label: 'Guernsey', value: 'guernsey' },
+      { label: translations.holstein_friesian || 'Holstein Friesian', value: 'holstein_friesian' },
+      { label: translations.jersey || 'Jersey', value: 'jersey' },
+      { label: translations.guernsey || 'Guernsey', value: 'guernsey' },
+      { label: translations.brown_swiss || 'Brown Swiss', value: 'brown_swiss' },
+      { label: translations.red_dane || 'Red Dane', value: 'red_dane' },
+      { label: translations.ayrshire || 'Ayrshire', value: 'ayrshire' },
+      { label: translations.jersey_cross || 'Jersey Cross', value: 'jersey_cross' },
+      { label: translations.holstein_friesian_cross || 'Holstein Friesian Cross', value: 'holstein_friesian_cross' },
+      { label: translations.gir || 'Gir', value: 'gir' },
+      { label: translations.sahiwal || 'Sahiwal', value: 'sahiwal' },
+      { label: translations.red_sindhi || 'Red Sindhi', value: 'red_sindhi' },
+      { label: translations.kankrej || 'Kankrej', value: 'kankrej' },
+      { label: translations.hariana || 'Hariana', value: 'hariana' },
+      { label: translations.ongole || 'Ongole', value: 'ongole' },
     ],
+    
     buffalo: [
-      { label: 'Murrah', value: 'murrah' },
-      { label: 'Nili-Ravi', value: 'nili-ravi' },
-      { label: 'Bhadawari', value: 'bhadawari' },
+      { label: translations.murrah || 'Murrah', value: 'murrah' },
+      { label: translations.surti || 'Surti', value: 'surti' },
+      { label: translations.jaffrabadi || 'Jaffrabadi', value: 'jaffrabadi' },
+      { label: translations.bhadawari || 'Bhadawari', value: 'bhadawari' },
+      { label: translations.nili_ravi || 'Nili Ravi', value: 'nili_ravi' },
+      { label: translations.mehsana || 'Mehsana', value: 'mehsana' },
+      { label: translations.nagpuri || 'Nagpuri', value: 'nagpuri' },
+      { label: translations.toda || 'Toda', value: 'toda' },
+      { label: translations.banni || 'Banni', value: 'banni' },
+      { label: translations.pandharpuri || 'Pandharpuri', value: 'pandharpuri' },
     ],
+  
     sheep: [
-      { label: 'Dorset', value: 'dorset' },
-      { label: 'Hampshire', value: 'hampshire' },
-      { label: 'Suffolk', value: 'suffolk' },
+      { label: translations.madras_red || 'Madras Red', value: 'madras_red' },
+      { label: translations.mandya || 'Mandya', value: 'mandya' },
+      { label: translations.mecheri || 'Mecheri', value: 'mecheri' },
+      { label: translations.bellary || 'Bellary', value: 'bellary' },
+      { label: translations.nilgiri || 'Nilgiri', value: 'nilgiri' },
+      { label: translations.ramanadhapuram_white || 'Ramanadhapuram White', value: 'ramanadhapuram_white' },
+      { label: translations.vembur || 'Vembur', value: 'vembur' },
+      { label: translations.deccani || 'Deccani', value: 'deccani' },
+      { label: translations.nalgonda || 'Nalgonda', value: 'nalgonda' },
     ],
+  
     goat: [
-      { label: 'Nubian', value: 'nubian' },
-      { label: 'Alpine', value: 'alpine' },
-      { label: 'Saanen', value: 'saanen' },
+      { label: translations.tellicherry || 'Tellicherry', value: 'tellicherry' },
+      { label: translations.osmanabadi || 'Osmanabadi', value: 'osmanabadi' },
+      { label: translations.sirohi || 'Sirohi', value: 'sirohi' },
+      { label: translations.boer || 'Boer', value: 'boer' },
+      { label: translations.kanni_aadu || 'Kanni Aadu', value: 'kanni_aadu' },
+      { label: translations.kodi_aadu || 'Kodi Aadu', value: 'kodi_aadu' },
+      { label: translations.jamunapari || 'Jamunapari', value: 'jamunapari' },
+      { label: translations.black_bengal || 'Black Bengal', value: 'black_bengal' },
     ],
   };
+  
 
   const hasChildOptions = [
     { label: 'Yes', value: 'yes' },
@@ -94,8 +128,8 @@ const App = () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
-      quality: 0.5,
+      aspect: [1,1],
+      quality: 0.25,
     });
     if (!result.canceled) {
       const newImages = [...images];
@@ -108,8 +142,8 @@ const App = () => {
   const pickImageFromCamera = async () => {
     const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
-      aspect: [4, 3],
-      quality: 0.5,
+      aspect: [1,1],
+      quality: 0.25,
     });
     if (!result.canceled) {
       const newImages = [...images];
@@ -120,71 +154,101 @@ const App = () => {
   };
 
 
-  const pickVideos = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission Denied', 'We need camera roll permissions to proceed.');
-      return;
-    }
+  const openVideoPicker = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Videos,
-      allowsMultipleSelection: true,  // For multiple selection
-      quality: 1,
+      allowsEditing: true,
+      quality:0.1
     });
 
     if (!result.canceled) {
-      setVideos([...videos, ...result.selected]);  // Append new videos to existing state
+      setVideo(result.assets[0].uri);
     }
   };
+  if(loading){
+    return <ActivityIndicator size="large" color="black" />
+  }
 
   const submitForm = async () => {
-    const formData = {
-      user_id:user._id,
-      description:"New Animal into the market",
-      images:"https://media.istockphoto.com/id/1404182584/photo/cows-in-a-meadow-with-fresh-green-grass-and-buttercup-wildflowers.jpg?s=1024x1024&w=is&k=20&c=SavkZAlXFRqBBupKz0Lf5KBeW1En7xc62eZxsOTQWWA=",
-      phone:user.phone,
-      price,
-      locationName:"Hyderabad",
-      latitude:location.latitude,
-      longitude:location.longitude,
-      category,
-      breed,
-      age,
-      lactationPeriod,
-      hasChild,
-      milkCapacity,
-      pregnancyStatus,
-      isBargainable,
-    };
-    console.log("formData",formData);
-
+    setLoading(true);
+    const formData = new FormData();
+  
+    formData.append('user_id', user._id);
+    formData.append('description', "New Animal into the market");
+    formData.append('phone', user.phone);
+    formData.append('price', price);
+    formData.append('latitude', location.latitude);
+    formData.append('longitude', location.longitude);
+    formData.append('category', category);
+    formData.append('breed', breed);
+    formData.append('age', age);
+    formData.append('lactationPeriod', lactationPeriod);
+    formData.append('hasChild', hasChild);
+    formData.append('milkCapacity', milkCapacity);
+    formData.append('pregnancyStatus', pregnancyStatus);
+    formData.append('isBargainable', isBargainable);
+  
+    // Append images and videos
+    images.forEach((image, index) => {
+      if (image) {
+        formData.append('media', {
+          uri: image,
+          type: 'image/jpeg',
+          name: `image_${index}.jpg`,
+        });
+      }
+    });
+  
+    if(video){
+      formData.append('media', {
+        uri: video,
+        type: 'video/mp4',
+        name: `video_one.mp4`,
+      })};
+  
+  
     try {
-      const response = await axios.post('https://pashupanta-backend-production.up.railway.app/api/animal/create', formData, {
+      const response = await axios.post('http://192.168.47.35:5000/api/animal/create', formData, {
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
       });
-      console.log("response ",response)
-      if (response.data.message=="Animal Post Created!!") {
+
+      if (response.data.message === "Animal Post Created!!") {
+        setLoading(false);
         Alert.alert('Success', 'Animal details submitted successfully!');
       } else {
-        // console.log("res",response)
+        setLoading(false);
         Alert.alert('Error', 'Something went wrong. Please try again.');
       }
     } catch (error) {
-      console.log("error",error.message)
+      setLoading(false);
+      console.error('Error:', error.message);
       Alert.alert('Error', 'An error occurred while submitting the form.');
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log('Data:', error.response.data);
+        console.log('Status:', error.response.status);
+        console.log('Headers:', error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.log('Request:', error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log('Error Message:', error.message);
+      }
     }
   };
 
   return (
     <BottomSheetModalProvider>
       <GestureHandlerRootView>
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles.container} keyboardDismissMode='interactive'>
 
           {/* Category Modal */}
           <View style={styles.row}>
-            <Text style={styles.label}>Category:</Text>
+            <Text style={styles.label}>{translations.select_category|| "Category"}:</Text>
             <View style={styles.dropdownContainer}>
               <CustomBottomSheetModal
                 data={animalCategories}
@@ -199,7 +263,7 @@ const App = () => {
           {/* Breed Modal - Dependent on selected category */}
           {category && (
             <View style={styles.row}>
-              <Text style={styles.label}>Breed:</Text>
+              <Text style={styles.label}>{translations.select_breed||"Breed"}:</Text>
               <View style={styles.dropdownContainer}>
                 <CustomBottomSheetModal
                   data={breedOptions[category] || []}  // Empty array if no category
@@ -213,7 +277,7 @@ const App = () => {
 
           {/* Price */}
           <View style={styles.row}>
-            <Text style={styles.label}>Price:</Text>
+            <Text style={styles.label}>{translations.select_price||"Price"}:</Text>
             <TextInput
               style={styles.input}
               placeholder='Enter Price'
@@ -225,7 +289,7 @@ const App = () => {
 
           {/* Milk Capacity */}
           <View style={styles.row}>
-            <Text style={styles.label}>Milk Capacity:</Text>
+            <Text style={styles.label}>{translations.milk_capacity||"Milk Capacity"}:</Text>
             <TextInput
               style={styles.input}
               placeholder='Enter Milk Capacity'
@@ -237,7 +301,7 @@ const App = () => {
 
           {/* Age */}
           <View style={styles.row}>
-            <Text style={styles.label}>{translations.pashu_age} (Years):</Text>
+            <Text style={styles.label}>{translations.pashu_age} ({translations.years}):</Text>
             <TextInput
               style={styles.input}
               placeholder="Age (Years)"
@@ -249,12 +313,12 @@ const App = () => {
 
           {/* Pregnancy Modal */}
           <View style={styles.row}>
-            <Text style={styles.label}>Pregnancy:</Text>
+            <Text style={styles.label}>{translations.pregnacy_status||"Pregnancy"}:</Text>
             <View style={styles.dropdownContainer}>
               <CustomBottomSheetModal
                 data={pregnancyOptions}
                 modalTitle="IsPregnant"
-                selectedValue={isBargainable}  // Dynamically change label after selection
+                selectedValue={pregnancyStatus}  // Dynamically change label after selection
                 onValueSelected={(value) => setPregnancyStatus(value)}
               />
             </View>
@@ -262,7 +326,7 @@ const App = () => {
 
           {/* Has Child Modal */}
           <View style={styles.row}>
-            <Text style={styles.label}>Has Child:</Text>
+            <Text style={styles.label}>{translations.child_status||"Has Child"}:</Text>
             <View style={styles.dropdownContainer}>
               <CustomBottomSheetModal
                 data={hasChildOptions}
@@ -275,7 +339,7 @@ const App = () => {
 
           {/* Lactation Period */}
           <View style={styles.row}>
-            <Text style={styles.label}>{translations.lactation_period} (Months):</Text>
+            <Text style={styles.label}>{translations.lactation_period} ({translations.months}):</Text>
             <TextInput
               style={styles.input}
               placeholder="Lactation Period (Months)"
@@ -287,7 +351,7 @@ const App = () => {
 
           {/* Bargainable Modal */}
           <View style={styles.row}>
-            <Text style={styles.label}>Bargainable:</Text>
+            <Text style={styles.label}>{translations.can_bargain||"Bargainable"}:</Text>
             <View style={styles.dropdownContainer}>
               <CustomBottomSheetModal
                 data={isBargainableOptions}
@@ -321,6 +385,9 @@ const App = () => {
             onCameraPress={pickImageFromCamera}
             onGalleryPress={pickImageFromGallery}
           />
+
+          <Button title="Pick a Video" onPress={openVideoPicker} />
+          {video && <Text>Video Selected</Text>}
 
             <TouchableOpacity onPress={submitForm} style={{backgroundColor:"green",marginBottom:50,padding:10,justifyContent:"center",alignItems:"center"}}>
               <Text style={{color:"white",fontSize:20,fontWeight:"bold"}}>Submit</Text>

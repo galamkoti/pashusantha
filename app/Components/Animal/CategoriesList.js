@@ -3,18 +3,7 @@ import React from 'react'
 import { router } from 'expo-router';
 import { useLanguage } from '../../context/LanguageContext';
 
-const categories = [
-    { name: 'Cow', image: require('../../../assets/animal/cow.jpg') ,value: 'cow' }, 
-    { name: 'Buffalo', image: require('../../../assets/animal/buffalo.jpg'),value: 'buffalo' },
-    { name: 'Goat', image: require('../../../assets/animal/goat.jpg') ,value: 'goat'},
-    { name: 'Sheep', image: require('../../../assets/animal/sheep.jpg') ,value: 'sheep'},
-    { name: 'Hen', image: require('../../../assets/animal/chicken.jpg'),value: 'hen' },
-    { name: 'Cow', image: require('../../../assets/animal/cow.jpg') ,value: 'cow'}, 
-    { name: 'Buffalo', image: require('../../../assets/animal/buffalo.jpg'),value: 'buffalo' },
-    { name: 'Goat', image: require('../../../assets/animal/goat.jpg') ,value: 'goat'},
-    { name: 'Sheep', image: require('../../../assets/animal/sheep.jpg'),value: 'sheep' },
-    { name: 'Hen', image: require('../../../assets/animal/chicken.jpg'),value: 'hen' },
-  ];
+
 
   const onPressCategory = (item) => {
     router.push({ pathname: 'common/categoryPreview', params: item });
@@ -22,6 +11,13 @@ const categories = [
 
 const CategoriesList = () => {
   const {translations}=useLanguage();
+  const categories = [
+    { name: translations.cow||'Cow', image: require('../../../assets/animal/cow.jpg') ,value: 'cow' }, 
+    { name: translations.buffalo ||'Buffalo', image: require('../../../assets/animal/buffalo.jpg'),value: 'buffalo' },
+    { name: translations.goat||'Goat', image: require('../../../assets/animal/goat.jpg') ,value: 'goat'},
+    { name:  translations.sheep||'Sheep', image: require('../../../assets/animal/sheep.jpg') ,value: 'sheep'},
+    { name:  translations.hen||'Hen', image: require('../../../assets/animal/chicken.jpg'),value: 'hen' },
+  ];
   return (
     <View style={styles.container}>
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -50,6 +46,7 @@ const styles = StyleSheet.create({
     container: {
       flexDirection: 'row',
       padding: 10,
+      marginBottom:20
     },
     categoryItem: {
       alignItems: 'center',

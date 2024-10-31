@@ -4,7 +4,7 @@ const AuthRouter =() =>{
     return (
         <Stack>
             <Stack.Screen name='login' options={{headerShown:false}} />
-            <Stack.Screen name='otpverify' options={{headerShown:false}}/>
+            <Stack.Screen name='phonelogin' options={{headerShown:false}}/>
         </Stack>
     );
 }

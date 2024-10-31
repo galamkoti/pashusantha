@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, Alert, ActivityIndicator, Text, RefreshControl, Button, Pressable, ScrollView } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, StyleSheet, FlatList, Alert, ActivityIndicator, Text, RefreshControl, Image, Pressable, ScrollView } from 'react-native';
 import PostCard from '../../Components/Crops/CropsPostCard';
 import axios from 'axios';
 import { SafeAreaView } from 'react-native-safe-area-context';
-// import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { useLocation } from '../../context/LocationContext';
-// import { Picker } from '@react-native-picker/picker';
 import {router} from 'expo-router'
 import {Entypo,FontAwesome6} from '@expo/vector-icons';
 import LocationModal from '../../Components/Location/locationModal';
 import CategoriesList from '../../Components/Animal/CategoriesList';
+import { FlashList } from "@shopify/flash-list";
+import { CustomBottomSheetModal } from '../../Components/Animal/CustomBottomSheetModal';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+
 
 // Render function for PostCard
 const renderItem = ({ item }) => {
@@ -23,6 +27,7 @@ const renderItem = ({ item }) => {
       distance={item.distance || 'N/A'} // Handle distance gracefully
       datePosted={item.createdAt} // Convert timestamp to a readable format
       image={imageUrl}
+      price={item.price}
       userName={item.user || 'Anonymous'}
       description={item.description}
       breed={item.breed}
@@ -31,6 +36,18 @@ const renderItem = ({ item }) => {
     />
   );
 };
+
+const languages=[
+  {label:"English",value:"en"},
+  {label:"తెలుగు",value:"te"},
+  {label:"हिन्दी",value:"hi"},
+  {label:"தமிழ்",value:"ta"},
+  {label:"ಕನ್ನಡ",value:"kn"},
+  {label:"മലയാളം",value:"ml"},
+  {label:"ਪੰਜਾਬੀ",value:"pn"},
+];
+
+
 
 const handlePostPress = (item) => {
   console.log("pressed on post",item)
@@ -49,9 +66,9 @@ const Index = () => {
   const [page, setPage] = useState(1); // Current page number
   const [totalPages, setTotalPages] = useState(1); // Total number of pages
   const [isRefreshing, setIsRefreshing] = useState(false); // Refreshing state for pull-to-refresh
-  // const { language, translations, languageLoading, changeLanguage } = useLanguage();
+  const { language, translations, languageLoading, changeLanguage } = useLanguage();
   const { location, locationName, fetchLocation } = useLocation();
-  // const [selectedLanguage, setSelectedLanguage] = useState(null); // Keep track of selected language
+  const [selectedLanguage, setSelectedLanguage] = useState(null); // Keep track of selected language
   const [isLocationModalVisible, setLocationModalVisible] = useState(false);
   const [posts,setPosts]=useState([]);
   const lat = 78.3906107;    // Replace with user's latitude
@@ -62,13 +79,18 @@ const Index = () => {
     setLocationModalVisible(!isLocationModalVisible);
   }
 
+  const handleLanguageChange=(selectedLang)=>{
+    setSelectedLanguage(selectedLang);
+    changeLanguage(selectedLang);
+  }
+
   // Fetch data function (handles both initial fetch and pagination)
   const fetchAnimalPostsData = async (pageNumber = 1, isRefreshing = false) => {
     if (loading && !isRefreshing) return; // Prevent multiple calls at once unless it's a refresh
     setLoading(true);
     const animalKind = 'AnimalPost';
     try {
-      const response = await axios.get(`https://pashupanta-backend-production.up.railway.app/api/posts?page=${pageNumber}&kind=${animalKind}`);
+      const response = await axios.get(`http://192.168.47.35:5000/api/posts?page=${pageNumber}&kind=${animalKind}`);
       const { data: fetchedData, totalPages: serverTotalPages } = response.data;
 
       if (pageNumber === 1) {
@@ -92,28 +114,6 @@ const Index = () => {
     fetchAnimalPostsData();
   }, []);
 
-  // const fetchNearbyPosts = async () => {
-  //   if (!location) return;
-
-  //   // setLoading(true);
-  //   try {
-  //     const response = await axios.get(`https://pashupanta-backend-production.up.railway.app/api/posts/nearby?lat=${lat}&lon=${lon}&radius=${radius}`);
-  //     console.log("nearby:",response.data)
-  //     setPosts(response.data.data);
-  //   } catch (error) {
-  //     console.log(error)
-  //     setError(error);
-  //   } finally {
-  //     // setLoading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (location) {
-  //     fetchNearbyPosts(); // Fetch posts after location is obtained
-  //   }
-  // }, []);
-
   // Load more data when the user reaches the end of the list
   const loadMorePosts = () => {
     if (page < totalPages && !loading) {
@@ -128,11 +128,12 @@ const Index = () => {
   };
 
   // Sync selectedLanguage with the language from context after it's loaded
-  // useEffect(() => {
-  //   if (!languageLoading && selectedLanguage !== language) {
-  //     setSelectedLanguage(language); // Only set selected language when language loading is done and it's different
-  //   }
-  // }, [language, languageLoading]);
+  useEffect(() => {
+    if (!languageLoading && selectedLanguage !== language) {
+      setSelectedLanguage(language); // Only set selected language when language loading is done and it's different
+      changeLanguage(language);
+    }
+  }, [language, languageLoading]);
 
   // Render footer loading indicator for pagination
   const renderFooter = () => {
@@ -140,12 +141,17 @@ const Index = () => {
     return <ActivityIndicator size="large" color="#0000ff" />;
   };
 
-  if (loading && page === 1) return <ActivityIndicator size="large" color="#0000ff" />; // Show loading indicator only for initial load
+  if (loading && page === 1) return 
+  <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
+    <ActivityIndicator size="large" color="#0000ff" />; // Show loading indicator only for initial load
+  </View>
   if (error) return <Text>Error: {error.message}</Text>;
 
   console.log("addres", locationName)
 
   return (
+    <GestureHandlerRootView>
+    <BottomSheetModalProvider>
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.topContainer}>
       <View style={styles.backAndLocationContainer}>
@@ -158,36 +164,25 @@ const Index = () => {
             }
           </Pressable>
       </View>
-        {/* Show Picker only after language has been loaded */}
-        {/* {!languageLoading && (
-          <View style={styles.languagePicker}>
-            <Picker
-              selectedValue={selectedLanguage}
-              onValueChange={(itemValue) => {
-                setSelectedLanguage(itemValue); // Update selected language
-                changeLanguage(itemValue); // Call changeLanguage to update the language in context
-              }}
-            >
-              <Picker.Item label="English" value="en" />
-              <Picker.Item label="Telugu (తెలుగు)" value="te" />
-              <Picker.Item label="Tamil (தமிழ்)" value="ta" />
-              <Picker.Item label="Kannada (ಕನ್ನಡ)" value="kn" />
-              <Picker.Item label="Hindi (हिन्दी)" value="hi" />
-              <Picker.Item label="Malayalam(മലയാളം)" value="ml" />
-              <Picker.Item label="Punjabi (ਪੰਜਾਬੀ)" value="pa" />
-            </Picker>
-          </View>
-        )} */}
+          <CustomBottomSheetModal
+                data={languages}
+                modalTitle="Pick Language"
+                selectedValue={selectedLanguage}  // Pass the selected value to change the label dynamically
+                onValueSelected={handleLanguageChange}
+              />
       </View>
 
-      <FlatList
+      {
+        data.length>0 ?       
+        <FlashList
         data={data}
+        estimatedItemSize={386}
         showsVerticalScrollIndicator={false}
         renderItem={renderItem}
         keyExtractor={(item) => item._id} // Fallback key if _id is missing
         contentContainerStyle={styles.postContainer}
         onEndReached={loadMorePosts} // Pagination
-        onEndReachedThreshold={0.9} // Trigger when the list is 90% from the bottom
+        onEndReachedThreshold={0.7} // Trigger when the list is 90% from the bottom
         ListFooterComponent={renderFooter} // Show loading spinner at the bottom when loading more
         ListHeaderComponent={
           <View>
@@ -197,12 +192,25 @@ const Index = () => {
         refreshControl={
           <RefreshControl refreshing={isRefreshing} onRefresh={refreshPosts} /> // Pull-to-refresh
         }
-      />
+      />:
+      <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
+      <Image
+      source={{ uri: 'https://media.giphy.com/media/11qwfyd5mTJvDa/giphy.gif' }}
+      style={styles.no_posts_video}
+    />
+      <Text style={{fontSize:24,fontWeight:"bold"}}>No Posts to Show Currently</Text>
+    </View>
+      }
+
+
       <LocationModal 
       visible={isLocationModalVisible}
       onClose={toggleLocationModal}
       />
     </SafeAreaView>
+    
+    </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   );
 };
 
@@ -214,7 +222,7 @@ const styles = StyleSheet.create({
   },
   postContainer: {
     padding: 10,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#fff',
   },
   topContainer: {
     flexDirection: 'row',
@@ -240,6 +248,10 @@ const styles = StyleSheet.create({
   },
   backAndLocationContainer:{
     flexDirection:"row"
+  },
+  no_posts_video:{
+    height:300,
+    width:300,
   }
 });
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, Alert, ActivityIndicator, Text, RefreshControl } from 'react-native';
+import { View, StyleSheet, FlatList, Alert, ActivityIndicator, Text, RefreshControl, Image } from 'react-native';
+import { FlashList } from "@shopify/flash-list";
 
 import axios from 'axios';
 
@@ -16,6 +17,7 @@ const renderItem = ({ item }) => {
   return (
     <PostCard
       category={item.animalType || 'Unknown'}
+      price={item.price}
       distance={item.distance || 'N/A'} // Handle distance gracefully
       datePosted={item.createdAt} // Convert timestamp to a readable format
       image={imageUrl}
@@ -59,7 +61,8 @@ const Index = () => {
 
     setLoading(true);
     try {
-      const response = await axios.get(`https://pashupanta-backend-production.up.railway.app/api/animal?page=${pageNumber}&animalType=${category}&kind=${kind}`);
+      console.log("infinite wala")
+      const response = await axios.get(`http://192.168.47.35:5000/api/posts/getCategory?page=${pageNumber}&animalType=${category}&kind=${kind}`);
       const { data: fetchedData, totalPages: serverTotalPages } = response.data;
 
       if (pageNumber === 1) {
@@ -72,6 +75,7 @@ const Index = () => {
       setPage(pageNumber);
     } catch (error) {
       setError(error);
+      setLoading(false);
     } finally {
       setLoading(false);
       if (isRefreshing) setIsRefreshing(false); // Reset refreshing state
@@ -110,21 +114,28 @@ const Index = () => {
 
   return (
     <View style={styles.mainContainer}>
-      <FlatList
+      { data.length>0?<FlashList
         data={data}
+        estimatedItemSize={386}
         showsVerticalScrollIndicator={false}
         renderItem={renderItem}
-        keyExtractor={(item) => item._id || item.id} // Fallback key if _id is missing
+        keyExtractor={(item) => item._id} // Fallback key if _id is missing
         contentContainerStyle={styles.postContainer}
         onEndReached={loadMorePosts} // Pagination
-        onEndReachedThreshold={0.9} // Trigger when the list is 90% from the bottom
+        onEndReachedThreshold={0.7} // Trigger when the list is 70% from the bottom
         ListFooterComponent={renderFooter} // Show loading spinner at the bottom when loading more
-
         refreshControl={
           <RefreshControl refreshing={isRefreshing} onRefresh={refreshPosts} /> // Pull-to-refresh
         }
-      />
-
+      />:
+      <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
+      <Image
+      source={{ uri: 'https://media.giphy.com/media/11qwfyd5mTJvDa/giphy.gif' }}
+      style={styles.no_posts_video}
+    />
+      <Text style={styles.emptyText}>No saved posts.</Text>
+      </View>
+      }
     </View>
   );
 };
@@ -135,9 +146,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  no_posts_video:{
+    height:300,
+    width:300
+  },
   postContainer: {
     padding: 10,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#fff',
   },
   topContainer: {
     flexDirection: 'row',
