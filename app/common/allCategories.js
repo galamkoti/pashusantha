@@ -13,11 +13,10 @@ const AllCategories = () => {
   const {translations}=useLanguage();
 
   const categories = [
-    { name: translations.cows||'Cow', image: require('../../assets/animal/cow.jpg'), value: 'cow' },
-    { name:  translations.buffalos||'Buffalo', image: require('../../assets/animal/buffalo.jpg'), value: 'buffalo' },
-    { name: translations.goats||'Goat', image: require('../../assets/animal/goat.jpg'), value: 'goat' },
-    { name: translations.sheeps|| 'Sheep', image: require('../../assets/animal/sheep.jpg'), value: 'sheep' },
-    { name: translations.hens||'Hen', image: require('../../assets/animal/chicken.jpg'), value: 'hen' }
+    { name: translations.cows||'Cows', image: require('../../assets/animal/cow.jpg'), value: 'cow' },
+    { name:  translations.buffalos||'Buffalos', image: require('../../assets/animal/buffalo.jpg'), value: 'buffalo' },
+    { name: translations.goats||'Goats', image: require('../../assets/animal/goat.jpg'), value: 'goat' },
+    { name: translations.sheeps|| 'Sheeps', image: require('../../assets/animal/sheep.jpg'), value: 'sheep' }
   ];
   const renderItem = ({ item }) => (
     <Pressable style={styles.categoryItem} onPress={() => onPressCategory(item)}>

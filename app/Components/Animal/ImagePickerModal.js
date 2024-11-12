@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, Button, StyleSheet, Pressable } from 'react-native';
 import Entypo from '@expo/vector-icons/Entypo';
+import { useLanguage } from '../../context/LanguageContext';
 
 const ImagePickerModal = ({ visible, onClose,onCameraPress,onGalleryPress }) => {
+  const {translations}=useLanguage();
   return (
     <Modal
       visible={visible}
@@ -14,15 +16,15 @@ const ImagePickerModal = ({ visible, onClose,onCameraPress,onGalleryPress }) => 
         <View style={styles.modalContent}>
           <Pressable onPress={onCameraPress} style={styles.iconTextBox}>
             <Entypo name="camera" size={24} color="black" />
-            <Text style={styles.locationText}>camera</Text>
+            <Text style={styles.locationText}>{translations.camera||"camera"}</Text>
           </Pressable>
           <Pressable onPress={onGalleryPress} style={styles.iconTextBox}>
             <Entypo name="image" size={24} color="black" />
-            <Text style={styles.locationText}>Gallery</Text>
+            <Text style={styles.locationText}>{translations.gallery||"Gallery"}</Text>
           </Pressable>
           <Pressable onPress={onClose} style={styles.iconTextBox}>
             <Entypo name="cross" size={24} color="black" />
-            <Text style={styles.locationText}>close</Text>
+            <Text style={styles.locationText}>{translations.cancel||"cancel"}</Text>
           </Pressable>
         </View>
       </View>

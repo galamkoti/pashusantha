@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import * as Location from 'expo-location';
-import { Alert } from "react-native";
+import { Alert, Linking } from "react-native";
 
 const locationContext = createContext();
 
@@ -10,11 +10,21 @@ export const LocationProvider = ({ children }) => {
     const [locationError, setLocationError] = useState(null);
     const [loadingLocation, setLoadingLocation] = useState(null);
     const [locationName, setLocationName] = useState(null);
+    const [formattedAddress,setFormattedAddress]=useState(null);
     const fetchLocation = async () => {
         try {
             const { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
-                Alert.alert('Permisssion Denied', 'Location permission is required to use this feature');
+                Alert.alert('Permisssion Denied', 'Location permission is required to use this feature',[
+                    {
+                        text:"CANCEL",
+                        style:"cancel"
+                    },
+                    {
+                        text:"Go Settings",
+                        onPress: () => Linking.openSettings(),
+                    }
+                ]);
                 setLocationError('Location Permission Denied');
                 setLoadingLocation(false);
                 return;
@@ -39,6 +49,8 @@ export const LocationProvider = ({ children }) => {
                 const formattedAddress = ` ${addressDetails.district || ''}`;
                 console.log("add", formattedAddress)
                 setLocationName(formattedAddress);
+                const addressToSaveInPost= ` ${addressDetails.formattedAddress || ''}`;
+                setFormattedAddress(addressToSaveInPost);
             }
             else {
                 setLocationName('No address found for this location');
@@ -53,7 +65,7 @@ export const LocationProvider = ({ children }) => {
         fetchLocation();
     }, [])
     return (
-        <locationContext.Provider value={{ location, loadingLocation, locationError, fetchLocation, locationName }}>
+        <locationContext.Provider value={{ location, loadingLocation, locationError, fetchLocation, locationName ,formattedAddress}}>
             {children}
         </locationContext.Provider>
     )

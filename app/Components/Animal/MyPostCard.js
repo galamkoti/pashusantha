@@ -2,24 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity,Pressable, Alert } from 'react-native';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { useLanguage } from '../../context/LanguageContext';
-import Entypo from '@expo/vector-icons/Entypo';
+import {MaterialIcons} from '@expo/vector-icons';
 import axios from 'axios';
 
 const MyPostCard = ({ category, breed, price, post_id,datePosted, image, userName, description, onCallPress ,confirmDeletePost, onPostPressed }) => {
   const {translations} = useLanguage();
 
-  const formattedDate = new Date(datePosted).toLocaleDateString();
+  const day= new Date(datePosted).getDate();
+  const month= new Date(datePosted).getMonth();
+  const year= new Date(datePosted).getFullYear();
+  const formattedDate = day+'-'+month+'-'+year; 
 
   const handleDeleteMyOwnPost=()=>{
-    Alert.alert("Delete Post","Are you sure want to delete post?",
+    Alert.alert(translations.delete_post||"Delete Post",translations.are_you_sure_to_delete_post+'?'||"Are you sure want to delete post?",
       [
         {
-          text:"CANCEL",
+          text:translations.cancel||"CANCEL",
           onPress:()=>console.log("Delete cancel pressed"),
           style:'cancel'
         },
         {
-          text:'DELETE',
+          text:translations.delete||'DELETE',
           onPress:()=>confirmDeletePost(),
           style:'default'
         }
@@ -32,8 +35,8 @@ const MyPostCard = ({ category, breed, price, post_id,datePosted, image, userNam
         <View style={styles.headerRowContainer}>
         <Text style={styles.userName}>{translations[category] || category}  - {translations[breed] || breed}</Text>
         </View>
-        <Pressable onPress={()=>handleDeleteMyOwnPost()} style={styles.threedots}>
-          <Entypo name="dots-three-vertical" size={22} color="white" />
+        <Pressable onPress={()=>handleDeleteMyOwnPost()}>
+        <MaterialIcons name="delete" size={24} color="black" />
         </Pressable>
       </View>
 
@@ -43,10 +46,10 @@ const MyPostCard = ({ category, breed, price, post_id,datePosted, image, userNam
       {/* User Details and Call Option */}
       <View style={styles.footer}>
         <View>
-          <Text style={styles.datePosted}>Posted on {formattedDate}</Text>
+        <Text style={styles.datePosted}>{translations.posted_date||"Posted on"} {formattedDate}</Text>
         </View>
         <View style={styles.callHeartContainer}>
-          <FontAwesome5 name="rupee-sign" size={24} color="black" />
+          <FontAwesome5 name="rupee-sign" size={22} color="black" />
           <Text style={styles.priceText}>{price}</Text>
         </View>
       </View>
@@ -68,6 +71,10 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 10,
   },
+  priceText:{
+    fontSize:24,
+    fontWeight:"bold"
+  }, 
   threedots:{
     backgroundColor:"gray",
     borderRadius:50,
@@ -91,8 +98,9 @@ const styles = StyleSheet.create({
     color: '#777',
   },
   image: {
-    height: 250,
-    resizeMode: 'cover',
+    height: 300,
+    width:350,
+    resizeMode:'stretch'
   },
   footer: {
     flexDirection: 'row',
@@ -106,8 +114,9 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   datePosted: {
-    fontSize: 12,
-    color: '#777',
+    fontSize: 18,
+    fontWeight:"500",
+    color: 'black',
   },
   callButton: {
     backgroundColor: '#28a745',
@@ -123,6 +132,8 @@ const styles = StyleSheet.create({
   },
   callHeartContainer: {
     flexDirection: 'row',
+    justifyContent:"center",
+    alignItems:"center"
   },
   headerRowContainer:{
     justifyContent:"space-around",

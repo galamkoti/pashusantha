@@ -9,18 +9,20 @@ import { useUserData } from '../context/UserContext';
 import * as ImagePicker from 'expo-image-picker'; 
 import ImagePickerModal from '../Components/Animal/ImagePickerModal';
 import axios from 'axios';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import { router } from 'expo-router';
 
 const App = () => {
   const { translations } = useLanguage();
   const { user } = useUserData();
-  const { location } = useLocation();
+  const { location , formattedAddress,fetchLocation} = useLocation();
 
 
   // State for each modal option
   const [category, setCategory] = useState(null);
   const [breed, setBreed] = useState(null);
   const [hasChild, setHasChild] = useState(null);
-  const [isBargainable, setIsBargainable] = useState(null);
+  const [isBargainable, setIsBargainable] = useState('yes');
   const [price, setPrice] = useState('');
   const [milkCapacity, setMilkCapacity] = useState('');
   const [age, setAge] = useState('');
@@ -105,17 +107,17 @@ const App = () => {
   
 
   const hasChildOptions = [
-    { label: 'Yes', value: 'yes' },
-    { label: 'No', value: 'no' },
+    { label: translations.yes || 'Yes', value: 'yes' },
+    { label:  translations.no ||'No', value: 'no' },
   ];
 
   const isBargainableOptions = [
-    { label: 'Bargainable', value: 'yes' },
-    { label: 'Not Bargainable', value: 'no' },
+    { label: translations.can_play_bargain||'Bargainable', value: 'yes' },
+    { label: translations.cannot_play_bargain||'Not Bargainable', value: 'no' },
   ];
   const pregnancyOptions = [
-    { label: 'Pregnant', value: 'yes' },
-    { label: 'Not Pregnant', value: 'no' },
+    { label: translations.got_pregnant||'Pregnant', value: 'yes' },
+    { label: translations.did_not_have_pregnant||'Not Pregnant', value: 'no' },
   ];
 
   // Handle category change: reset breed when category is changed
@@ -166,19 +168,34 @@ const App = () => {
     }
   };
   if(loading){
-    return <ActivityIndicator size="large" color="black" />
+    return  (<View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
+      <ActivityIndicator size="large" color="black" />
+    </View>);
   }
 
   const submitForm = async () => {
     setLoading(true);
     const formData = new FormData();
+    
+    if(category==null || breed==null|| price=='' || age=='' || hasChild==null || milkCapacity=='' || pregnancyStatus=='' ||images[0]==null){
+      Alert.alert(translations.please_submit_all_details||"Please Submit all the required fields");
+      setLoading(false);
+      return;
+    }
+    else if(formattedAddress==null || formattedAddress=='')
+    {
+      await fetchLocation();
+      setLoading(false);
+      return;
+    }
   
     formData.append('user_id', user._id);
     formData.append('description', "New Animal into the market");
     formData.append('phone', user.phone);
     formData.append('price', price);
-    formData.append('latitude', location.latitude);
-    formData.append('longitude', location.longitude);
+    // formData.append('latitude', location.latitude);
+    // formData.append('longitude', location.longitude);
+    formData.append('locationName', formattedAddress);
     formData.append('category', category);
     formData.append('breed', breed);
     formData.append('age', age);
@@ -208,7 +225,7 @@ const App = () => {
   
   
     try {
-      const response = await axios.post('http://192.168.47.35:5000/api/animal/create', formData, {
+      const response = await axios.post('https://pashupanta-backend-production.up.railway.app/api/animal/create', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -216,10 +233,11 @@ const App = () => {
 
       if (response.data.message === "Animal Post Created!!") {
         setLoading(false);
-        Alert.alert('Success', 'Animal details submitted successfully!');
+        // router.replace("/Animals/Animal");
+        Alert.alert(translations.successful||'Successful', translations.pashu_details_submitted_successfully||'pashu details submitted successfully!');
       } else {
         setLoading(false);
-        Alert.alert('Error', 'Something went wrong. Please try again.');
+        Alert.alert(translations.error||'Error', translations.Something_went_wrong_Please_try_again||'Something went wrong. Please try again.');
       }
     } catch (error) {
       setLoading(false);
@@ -248,11 +266,12 @@ const App = () => {
 
           {/* Category Modal */}
           <View style={styles.row}>
+          {/* <FontAwesome5 name="star-of-life" size={14} color="red" /> */}
             <Text style={styles.label}>{translations.select_category|| "Category"}:</Text>
             <View style={styles.dropdownContainer}>
               <CustomBottomSheetModal
                 data={animalCategories}
-                modalTitle="Select Category"
+                modalTitle={translations.select||"Select"}
                 selectedValue={category}  // Pass the selected value to change the label dynamically
                 onValueSelected={handleCategoryChange}
               />
@@ -263,11 +282,12 @@ const App = () => {
           {/* Breed Modal - Dependent on selected category */}
           {category && (
             <View style={styles.row}>
+               {/* <FontAwesome5 name="star-of-life" size={14} color="red" /> */}
               <Text style={styles.label}>{translations.select_breed||"Breed"}:</Text>
               <View style={styles.dropdownContainer}>
                 <CustomBottomSheetModal
                   data={breedOptions[category] || []}  // Empty array if no category
-                  modalTitle="Select Breed"
+                  modalTitle={translations.select||"Select"}
                   selectedValue={breed}  // Update the label after breed is selected
                   onValueSelected={(value) => setBreed(value)}
                 />
@@ -277,6 +297,7 @@ const App = () => {
 
           {/* Price */}
           <View style={styles.row}>
+          {/* <FontAwesome5 name="star-of-life" size={14} color="red" /> */}
             <Text style={styles.label}>{translations.select_price||"Price"}:</Text>
             <TextInput
               style={styles.input}
@@ -301,6 +322,7 @@ const App = () => {
 
           {/* Age */}
           <View style={styles.row}>
+          {/* <FontAwesome5 name="star-of-life" size={14} color="red" /> */}
             <Text style={styles.label}>{translations.pashu_age} ({translations.years}):</Text>
             <TextInput
               style={styles.input}
@@ -317,7 +339,7 @@ const App = () => {
             <View style={styles.dropdownContainer}>
               <CustomBottomSheetModal
                 data={pregnancyOptions}
-                modalTitle="IsPregnant"
+                modalTitle={translations.select ||"Select"}
                 selectedValue={pregnancyStatus}  // Dynamically change label after selection
                 onValueSelected={(value) => setPregnancyStatus(value)}
               />
@@ -330,7 +352,7 @@ const App = () => {
             <View style={styles.dropdownContainer}>
               <CustomBottomSheetModal
                 data={hasChildOptions}
-                modalTitle="Has Child"
+                modalTitle={translations.select||"Select"}
                 selectedValue={hasChild}  // Dynamically change label after selection
                 onValueSelected={(value) => setHasChild(value)}
               />
@@ -355,14 +377,19 @@ const App = () => {
             <View style={styles.dropdownContainer}>
               <CustomBottomSheetModal
                 data={isBargainableOptions}
-                modalTitle="Bargainable"
+                modalTitle={translations.select||"Select"}
                 selectedValue={isBargainable}  // Dynamically change label after selection
                 onValueSelected={(value) => setIsBargainable(value)}
               />
             </View>
           </View>
-          {/* images */}
 
+          <View style={{flexDirection:"row"}}>
+          {/* <FontAwesome5 name="star-of-life" size={14} color="red" /> */}
+          {/* <Text> {translations.these_are_required||" as Required"}</Text> */}
+          </View>
+          {/* images */}
+          <Text>{translations.select_atleast_one_picture||"Please Select atleast one picture"}</Text>
           <View style={styles.imageContainer}>
             {images.map((image, index) => (
               <Pressable
@@ -373,7 +400,7 @@ const App = () => {
                 {image ? (
                   <Image source={{ uri: image }} style={styles.image} />
                 ) : (
-                  <Text style={styles.placeholderText}>Upload Image {index + 1}</Text>
+                  <Text style={styles.placeholderText}>{translations.upload_image||"Upload Image"} {index + 1}</Text>
                 )}
               </Pressable>
             ))}
@@ -386,11 +413,11 @@ const App = () => {
             onGalleryPress={pickImageFromGallery}
           />
 
-          <Button title="Pick a Video" onPress={openVideoPicker} />
-          {video && <Text>Video Selected</Text>}
+          {/* <Button title="Pick a Video" onPress={openVideoPicker} />
+          {video && <Text>Video Selected</Text>} */}
 
-            <TouchableOpacity onPress={submitForm} style={{backgroundColor:"green",marginBottom:50,padding:10,justifyContent:"center",alignItems:"center"}}>
-              <Text style={{color:"white",fontSize:20,fontWeight:"bold"}}>Submit</Text>
+            <TouchableOpacity onPress={submitForm} style={{backgroundColor:"black",marginBottom:50,padding:10,justifyContent:"center",alignItems:"center"}}>
+              <Text style={{color:"white",fontSize:20,fontWeight:"bold"}}>{translations.sell||"Sell"}</Text>
             </TouchableOpacity>
         </ScrollView>
       </GestureHandlerRootView>
@@ -447,13 +474,13 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 10,
-    backgroundColor: '#ccc',
+    backgroundColor: 'gray',
     justifyContent: 'center',
     alignItems: 'center',
   },
   placeholderText: {
-    color: '#fff',
-    fontSize: 12,
+    color: 'white',
+    fontSize: 14,
     textAlign: 'center',
   },
   image: {

@@ -4,17 +4,18 @@ import axios from 'axios';
 import { useUserData } from '../context/UserContext';
 import MyPostCard from '../Components/Animal/MyPostCard';
 import { router } from 'expo-router';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import {Video,ResizeMode} from 'expo-av'
+import { useLanguage } from '../context/LanguageContext';
 
 const Index = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingAtDelete, setLoadingAtDelete] = useState(false);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);   // Current page number
   const [totalPages, setTotalPages] = useState(1);  // Total number of pages
   const [isRefreshing, setIsRefreshing] = useState(false);  // Refreshing state for pull-to-refresh
   const {user}=useUserData();
+  const {translations}=useLanguage();
   const videoRef=useRef(null);
   console.log("user in myposts",user._id)
 
@@ -23,6 +24,8 @@ const Index = () => {
       videoRef.current.playAsync();
     }
   },[])
+
+
 
   // Render function for PostCard
 const renderItem = ({ item }) => {
@@ -49,20 +52,20 @@ const renderItem = ({ item }) => {
 };
 
 const confirmDeletePost = async(post_id) =>{
+  setLoadingAtDelete(true);
   try {
-    const result = await axios.delete(`http://192.168.47.35:5000/api/posts/delete/${post_id}`);
+    const result = await axios.delete(`https://pashupanta-backend-production.up.railway.app/api/posts/delete/${post_id}/${user._id}`);
     // const {data}=result.data;
     console.log("data of deletion",result);
     if(result.status==201){
-      
-      Alert.alert(result.data.message);
+      Alert.alert(translations.post_deleted_successfully||result.data.message);
       const afterDeletedata=data.filter((item)=>item._id!=post_id);
       setData(afterDeletedata);
     }
-
   } catch (error) {
     console.log("error while deleting post",error);
   }
+  setLoadingAtDelete(false);
 }
 const handlePostPress = (item) => {
   console.log("pressed on post",item)
@@ -75,9 +78,8 @@ const handlePostPress = (item) => {
     setLoading(true);
 
     try {
-      const response = await axios.get(`http://192.168.47.35:5000/api/posts/myposts/user/${user._id}?page=${pageNumber}`);
+      const response = await axios.get(`https://pashupanta-backend-production.up.railway.app/api/posts/myposts/user/${user._id}?page=${pageNumber}`);
       const { data: fetchedData, totalPages: serverTotalPages } = response.data;
-      console.log("myposts",fetchedData)
       if (pageNumber === 1) {
         setData(fetchedData); // If it's the first page or a refresh, replace existing posts
       } else {
@@ -118,8 +120,11 @@ const handlePostPress = (item) => {
     return <ActivityIndicator size="large" color="#0000ff" />;
   };
 
-
-
+  if(loadingAtDelete){
+    return  (<View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
+      <ActivityIndicator size="large" color="black" />
+    </View>);
+  }
   if (loading && page === 1) return <ActivityIndicator size="large" color="#0000ff" />; // Show loading indicator only for initial load
   if (error) return <Text>Error: {error.message}</Text>;
 
@@ -139,12 +144,14 @@ const handlePostPress = (item) => {
           <RefreshControl refreshing={isRefreshing} onRefresh={refreshPosts} /> // Pull-to-refresh
         }
       />:
-      <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
-        <Image
+      <View style={{flex:1,justifyContent:"center",alignItems:"center",backgroundColor:"#fff"}}>
+        {/* <Image
         source={{ uri: 'https://media.giphy.com/media/11qwfyd5mTJvDa/giphy.gif' }}
         style={styles.no_posts_video}
-      />
-        <Text style={{fontSize:24,fontWeight:"bold"}}>No Posts From You</Text>
+      /> */}
+       <Image source={{uri:"https://res.cloudinary.com/dxxe5dxub/image/upload/v1731414590/sad_cow_rtvxow.png"}}
+         style={{ height:200,width:"90%" }}/>
+        <Text style={{fontSize:24,fontWeight:"bold",marginTop:50}}>{translations.did_not_found_posts_from_you||"No Posts From You"}</Text>
       </View>}
       
     </View>

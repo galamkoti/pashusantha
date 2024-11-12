@@ -7,6 +7,7 @@ import axios from 'axios';
 import {router, useLocalSearchParams} from 'expo-router'
 
 import PostCard from '../Components/Crops/CropsPostCard';
+import { useLanguage } from '../context/LanguageContext';
 
 // Render function for PostCard
 const renderItem = ({ item }) => {
@@ -31,7 +32,6 @@ const renderItem = ({ item }) => {
 };
 
 const handlePostPress = (item) => {
-  console.log("pressed on post",item)
   router.push({pathname:`common/animalPostDetails`,params:item})
 };
 
@@ -48,8 +48,8 @@ const Index = () => {
   const [totalPages, setTotalPages] = useState(1); // Total number of pages
   const [isRefreshing, setIsRefreshing] = useState(false); // Refreshing state for pull-to-refresh
   const item=useLocalSearchParams();
+  const {translations}=useLanguage();
   const category=item.value;
-    console.log(category,"catgeory")
     
 
   // Fetch data function (handles both initial fetch and pagination)
@@ -61,8 +61,7 @@ const Index = () => {
 
     setLoading(true);
     try {
-      console.log("infinite wala")
-      const response = await axios.get(`http://192.168.47.35:5000/api/posts/getCategory?page=${pageNumber}&animalType=${category}&kind=${kind}`);
+      const response = await axios.get(`https://pashupanta-backend-production.up.railway.app/api/posts/getCategory?page=${pageNumber}&animalType=${category}&kind=${kind}`);
       const { data: fetchedData, totalPages: serverTotalPages } = response.data;
 
       if (pageNumber === 1) {
@@ -129,11 +128,13 @@ const Index = () => {
         }
       />:
       <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
-      <Image
+      {/* <Image
       source={{ uri: 'https://media.giphy.com/media/11qwfyd5mTJvDa/giphy.gif' }}
       style={styles.no_posts_video}
-    />
-      <Text style={styles.emptyText}>No saved posts.</Text>
+    /> */}
+    <Image source={{uri:"https://res.cloudinary.com/dxxe5dxub/image/upload/v1731414590/sad_cow_rtvxow.png"}}
+         style={{ height:200,width:"100%" }}/>
+      <Text style={styles.emptyText}>{translations.no_posts_in_this_category||"No Posts in this Category."}</Text>
       </View>
       }
     </View>
@@ -150,6 +151,12 @@ const styles = StyleSheet.create({
     height:300,
     width:300
   },
+  emptyText: {
+    textAlign: 'center',
+    fontSize: 20,
+    marginTop: 50,
+    fontWeight:"bold"
+},
   postContainer: {
     padding: 10,
     backgroundColor: '#fff',

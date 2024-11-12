@@ -9,7 +9,7 @@ export const UserProvider= ({children})=>{
     const [userLoading,setUserLoading]=useState(true);
     const loginUser=async(userData)=>{
         try{
-            await AsyncStorage.setItem("pp_user",JSON.stringify(userData));
+            await AsyncStorage.setItem("user",JSON.stringify(userData));
             setUser(userData);
         }
         catch(error){
@@ -18,9 +18,9 @@ export const UserProvider= ({children})=>{
     }
     const logoutUser=async()=>{
         try {
-            router.replace("/auth/login")
+            router.replace("/auth/phonelogin")
             setUser(null);
-            await AsyncStorage.removeItem("pp_user");
+            await AsyncStorage.removeItem("user");
             console.log("removed user fromasync")
         } catch (error) {   
             console.log('Error removing user data from AsyncStorage', error.message);
@@ -28,7 +28,7 @@ export const UserProvider= ({children})=>{
     }
     const checkLoginStatus=async()=>{
         try {
-            const userInfo=await AsyncStorage.getItem("pp_user");
+            const userInfo=await AsyncStorage.getItem("user");
             console.log("user in context",userInfo);
             if(userInfo){
                 setUser(JSON.parse(userInfo));
@@ -43,7 +43,7 @@ export const UserProvider= ({children})=>{
         checkLoginStatus();
     },[]);
     return (
-        <userContext.Provider value={{loginUser,logoutUser,userLoading,user,checkLoginStatus}}>
+        <userContext.Provider value={{loginUser,logoutUser,userLoading,setUserLoading,user,checkLoginStatus}}>
             {children}
         </userContext.Provider>
     );

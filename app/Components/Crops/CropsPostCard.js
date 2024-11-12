@@ -8,10 +8,12 @@ import { BannerAd, BannerAdSize, TestIds, useForeground } from 'react-native-goo
 
 const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-7503444463934319/7517812846';
 
-const PostCard = ({ category, breed, distance, datePosted, image,price, userName, description, onCallPress , onPostPressed }) => {
+const PostCard = ({ category, breed, datePosted, image,price, onPostPressed }) => {
   const {translations} = useLanguage();
-
-  const formattedDate = new Date(datePosted).toLocaleDateString(); // Convert datePosted to readable format
+const day= new Date(datePosted).getDate();
+const month= new Date(datePosted).getMonth();
+const year= new Date(datePosted).getFullYear();
+const formattedDate = day+'-'+month+'-'+year;  // Convert datePosted to readable format
   
   const bannerRef = useRef(null);
 
@@ -34,11 +36,10 @@ const PostCard = ({ category, breed, distance, datePosted, image,price, userName
       {/* User Details and Call Option */}
       <View style={styles.footer}>
         <View>
-        
-          <Text style={styles.datePosted}>Posted on {formattedDate}</Text>
+          <Text style={styles.datePosted}>{translations.posted_date||"Posted on"} {formattedDate}</Text>
         </View>
         <View style={styles.callHeartContainer}>
-          <FontAwesome5 name="rupee-sign" size={24} color="black" />
+          <FontAwesome5 name="rupee-sign" size={22} color="black" />
           <Text style={styles.priceText}>{price}</Text>
         </View>
       </View>
@@ -58,10 +59,10 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 30,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
     shadowRadius: 5,
-    elevation: 10,
+    elevation: 15,
   },
   priceText:{
     fontSize:24,
@@ -82,9 +83,9 @@ const styles = StyleSheet.create({
     color: '#777',
   },
   image: {
-    width: '100%',
-    height: 250,
-    resizeMode: 'cover',
+    height: 300,
+    width:350,
+    resizeMode:'stretch'
   },
   footer: {
     flexDirection: 'row',
@@ -93,12 +94,13 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   userName: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: 'bold',
     color: '#333',
   },
   datePosted: {
-    fontSize: 16,
+    fontSize: 15,
+    fontWeight:"500",
     color: 'black',
   },
   callButton: {
