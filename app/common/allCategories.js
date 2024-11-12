@@ -13,14 +13,14 @@ const AllCategories = () => {
   const {translations}=useLanguage();
 
   const categories = [
-    { name: translations.cows||'Cows', image: require('../../assets/animal/cow.jpg'), value: 'cow' },
-    { name:  translations.buffalos||'Buffalos', image: require('../../assets/animal/buffalo.jpg'), value: 'buffalo' },
-    { name: translations.goats||'Goats', image: require('../../assets/animal/goat.jpg'), value: 'goat' },
-    { name: translations.sheeps|| 'Sheeps', image: require('../../assets/animal/sheep.jpg'), value: 'sheep' }
+    { name: translations.cows||'Cows', image: "https://res.cloudinary.com/dxxe5dxub/image/upload/v1731414620/cow_e68rwm.jpg" ,value: 'cow' }, 
+    { name: translations.buffalos ||'Buffalos', image: "https://res.cloudinary.com/dxxe5dxub/image/upload/v1731414620/buffalo_tfzv9a.jpg",value: 'buffalo' },
+    { name: translations.goats||'Goats', image: "https://res.cloudinary.com/dxxe5dxub/image/upload/v1731414620/goat_ez70sj.jpg" ,value: 'goat'},
+    { name:  translations.sheeps||'Sheeps', image: "https://res.cloudinary.com/dxxe5dxub/image/upload/v1731414620/sheep_ihtcbi.jpg" ,value: 'sheep'}
   ];
   const renderItem = ({ item }) => (
     <Pressable style={styles.categoryItem} onPress={() => onPressCategory(item)}>
-      <Image source={item.image} style={styles.categoryImage} />
+      <Image source={{uri:item.image}} style={styles.categoryImage} />
       <Text style={styles.categoryName}>{item.name}</Text>
     </Pressable>
   );
