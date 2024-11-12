@@ -17,7 +17,7 @@ const AnimalPostDetails = () => {
     const item = useLocalSearchParams(); 
     const {user} = useUserData();
     const {translations} = useLanguage();
-    const { phone, price, animalType, breed, age, images, _id, videos, isBargainable, milkCapacity,lactationPeriod,location,pregnancyStatus} = item;  // videos added here
+    const { phone, price, animalType, breed, age, images, _id, videos, isBargainable, milkCapacity,lactationPeriod,locationName,pregnancyStatus} = item;  // videos added here
     const { savedPosts, addPost, removePost } = useSavePost();  // Get context methods
     const videoRef = useRef(null); // Reference to video player
     const [status, setStatus] = useState({ isPlaying: false });
@@ -55,49 +55,84 @@ const AnimalPostDetails = () => {
 
     // Function to save or unsave the post
     const toggleSavePost = () => {
+        if(!user){
+            Alert.alert(translations.login||"Login",translations.please_login_to_proceed||"Please Login To Proceed",[
+              {
+                text:translations.cancel||"CANCEL",
+                style:"cancel"
+              },
+              {
+                text:translations.login||"LOGIN",
+                style:'default',
+                onPress: () => {
+                  router.push({pathname:"auth/phonelogin"})
+                }
+              }
+            ])
+          }
+    else{
         if (isSaved) {
             // Remove post from saved posts
             removePost(_id);
             setIsSaved(false);
-            Alert.alert('Removed from Favorites');
+            Alert.alert(translations.removed_from_saved_posts||'Removed from saved Posts');
         } else {
             // Add post to saved posts
             addPost(item);
             setIsSaved(true);
-            Alert.alert('Added to Favorites');
+            Alert.alert(translations.post_got_saved||'Added to saved Posts');
         }
+    }
     };
 
     // Function to share the post details
-    const sharePost = async () => {
-        try {
-            const message = `Check out this pashu`;
-            await Sharing.shareAsync(null, {
-                dialogTitle: 'Share Animal Post',
-                mimeType: 'text/plain',
-                message: message,
-            });
-        } catch (error) {
-            Alert.alert('Error', 'There was a problem sharing the post.');
-        }
-    };
+    // const sharePost = async () => {
+    //     try {
+    //         const message = `Check out this pashu`;
+    //         await Sharing.shareAsync(null, {
+    //             dialogTitle: 'Share Animal Post',
+    //             mimeType: 'text/plain',
+    //             message: message,
+    //         });
+    //     } catch (error) {
+    //         Alert.alert('Error', 'There was a problem sharing the post.');
+    //     }
+    // };
 
     const handleCallSeller = () => {
-        Alert.alert("Call Seller", "Are You Sure to Call?", [
-            {
-                text: "CANCEL",
-                onPress: () => console.log("Cancel Pressed"),
-                style: "cancel"
-            },
-            {
-                text: "CALL",
+        if(!user){
+            Alert.alert(translations.login||"Login",translations.please_login_to_proceed||"Please Login To Proceed",[
+              {
+                text:translations.cancel||"CANCEL",
+                style:"cancel"
+              },
+              {
+                text:translations.login||"LOGIN",
+                style:'default',
                 onPress: () => {
-                    console.log(user.phone, "calling", phone),
-                    Linking.openURL(`tel:${phone}`)
-                },
-                style: "default"
-            }
-        ])
+                  router.push({pathname:"auth/phonelogin"})
+                }
+              }
+            ])
+          }
+          else{
+
+              Alert.alert(translations.call_seller||"Call Seller", translations.are_you_sure_to_call||"Are You Sure to Call?", [
+                  {
+                      text: translations.cancel || "CANCEL",
+                      onPress: () => console.log("Cancel Pressed"),
+                      style: "cancel"
+                  },
+                  {
+                      text: translations.call||"CALL",
+                      onPress: () => {
+                          console.log(user.phone, "calling", phone),
+                          Linking.openURL(`tel:${phone}`)
+                      },
+                      style: "default"
+                  }
+              ])
+          }
     }
 
     return (
@@ -157,16 +192,17 @@ const AnimalPostDetails = () => {
 
                 <Text style={styles.label}>{translations.price || "Price"}:</Text>
                 
-                <Text style={styles.value}><FontAwesome5 name="rupee-sign" size={24} color="black" />{price}</Text>
+                <Text style={styles.value}><FontAwesome5 name="rupee-sign" size={20} color="#555" />{price}</Text>
 
-                <Text style={styles.label}>{translations.location || "Location"}:</Text>
-                <Text style={styles.value}>{location}</Text>
 
                 <Text style={styles.label}>{translations.pregnancy || "Pregnancy Status"}:</Text>
                 <Text style={styles.value}>{pregnancyStatus=='yes'?translations.is_present:translations.not_present||pregnancyStatus}</Text>
 
                 <Text style={styles.label}>{translations.is_bargainable || "Bargainable or Not?"}:</Text>
                 <Text style={styles.value}>{isBargainable=='yes'?translations.can_play_bargain:translations.cannot_play_bargain||isBargainable}</Text>
+                
+                <Text style={styles.label}>{translations.location || "Location"}:</Text>
+                <Text style={styles.value}>{locationName}</Text>
             </View>
 
             {/* Call to Action Button */}
@@ -182,10 +218,10 @@ const AnimalPostDetails = () => {
             </TouchableOpacity>
 
             {/* Share Post Button */}
-            <TouchableOpacity style={styles.shareButton} onPress={sharePost}>
+            {/* <TouchableOpacity style={styles.shareButton} onPress={sharePost}>
                 <FontAwesome name="share" size={24} color="black" />
                 <Text style={styles.shareText}>{translations.share_post||"Share Post"}</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             {/* <BannerAd
             unitId={adUnitId}
             size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}

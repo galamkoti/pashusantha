@@ -12,23 +12,18 @@ import { useLanguage } from '../../context/LanguageContext';
 const CategoriesList = () => {
   const {translations}=useLanguage();
   const categories = [
-    { name: translations.cow||'Cow', image: require('../../../assets/animal/cow.jpg') ,value: 'cow' }, 
-    { name: translations.buffalo ||'Buffalo', image: require('../../../assets/animal/buffalo.jpg'),value: 'buffalo' },
-    { name: translations.goat||'Goat', image: require('../../../assets/animal/goat.jpg') ,value: 'goat'},
-    { name:  translations.sheep||'Sheep', image: require('../../../assets/animal/sheep.jpg') ,value: 'sheep'},
-    { name:  translations.hen||'Hen', image: require('../../../assets/animal/chicken.jpg'),value: 'hen' },
+    { name: translations.cows||'Cows', image: "https://res.cloudinary.com/dxxe5dxub/image/upload/v1731414620/cow_e68rwm.jpg" ,value: 'cow' }, 
+    { name: translations.buffalos ||'Buffalos', image: "https://res.cloudinary.com/dxxe5dxub/image/upload/v1731414620/buffalo_tfzv9a.jpg",value: 'buffalo' },
+    { name: translations.goats||'Goats', image: "https://res.cloudinary.com/dxxe5dxub/image/upload/v1731414620/goat_ez70sj.jpg" ,value: 'goat'},
+    { name:  translations.sheeps||'Sheeps', image: "https://res.cloudinary.com/dxxe5dxub/image/upload/v1731414620/sheep_ihtcbi.jpg" ,value: 'sheep'}
   ];
   return (
     <View style={styles.container}>
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       {categories.map((category, index) => (
         <TouchableOpacity key={index} style={styles.categoryItem} onPress={() => onPressCategory(category)}>
-          <Image source={category.image} style={styles.image} />
-          <Text style={styles.text}>{category.value=='cow'?translations.cows:
-                                      category.value=='buffalo'?translations.buffalo:
-                                      category.value=='goat'?translations.goats:
-                                      category.value=='sheep'?translations.sheeps:
-                                      category.value=='hen'?translations.hens:category.name}</Text>
+          <Image source={{uri:category.image}} style={styles.image} />
+          <Text style={styles.text}>{translations[category.name]||category.name}</Text>
         </TouchableOpacity>
       ))}
       {/* Ellipsis (3 dots) Button to redirect to more categories */}
@@ -59,8 +54,9 @@ const styles = StyleSheet.create({
     },
     text: {
       marginTop: 5,
-      fontSize: 16,
+      fontSize: 18,
       textAlign: 'center',
+      fontWeight:"bold"
     },
     dotsContainer: {
       justifyContent: 'center',

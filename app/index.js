@@ -1,68 +1,77 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {  router} from 'expo-router'
-import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, ActivityIndicator, View,Text } from 'react-native';
 import { useUserData } from './context/UserContext';
-import { useLanguage } from './context/LanguageContext';
-const index = () => {
-    const {user}=useUserData();
-    const {translations}=useLanguage();
-    console.log("user in app index",user);
-  return (
-    <View style={styles.container}>
-        {user?
-        <>
-        {/* Animals Box */}
-        <TouchableOpacity style={styles.box} onPress={()=>{
-                  router.replace('Animals/Animal')
-            }}>
-                <Text style={styles.boxText}>{translations.animals || 'Animals'}</Text>
-            </TouchableOpacity>
+import { Redirect } from 'expo-router';
+import { useEffect, useState } from 'react';
+import * as SplashScreen from 'expo-splash-screen'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-            {/* Crops Box */}
-            <TouchableOpacity style={styles.box} onPress={()=>{
-                  router.replace('Crops/Crops')
-            }}>
-                <Text style={styles.boxText}>{translations.crops || 'Crops'}</Text>
-            </TouchableOpacity>
-        </>:
-            <TouchableOpacity style={styles.box} onPress={()=>{
-                  router.replace('/auth/login')
-            }}>
-                <Text style={styles.boxText}>Login</Text>
-            </TouchableOpacity>
-        }
+const Index = () => {
+    const { user,userLoading } = useUserData();
+    const [isFirstLaunch,setIsFirstLaunch]=useState(null);  
+
+    useEffect(()=>{
+        AsyncStorage.getItem('alreadyLaunchedVikrai').then(value=>{
+            if(value==null){
+                AsyncStorage.setItem('alreadyLaunchedVikrai','true');
+                setIsFirstLaunch(true);
+            }
+            else{
+                setIsFirstLaunch(false);
+            }
+        })
+    },[]);
+
+    if(userLoading){
+        return (
+        <View style={styles.container}>
+            <ActivityIndicator size="large" color="black"/>
         </View>
-  )
-}
+        );
+    }
+    
+    if(isFirstLaunch==null){
+        return null;
+    }
+    else if(isFirstLaunch==true){
+        return <Redirect href="/auth/onboarding" />
+    }
+    else if(isFirstLaunch==false)
+    {
+        return <Redirect href="/Animals/Animal" />
+    }
+    // else if(isFirstLaunch==false && user==null)
+    // {
+    //     return <Redirect href="/auth" />
+    // }
 
-export default index
+    // SplashScreen.preventAutoHideAsync();
+    // useEffect(()=>{
+    //     setTimeout(SplashScreen.hideAsync, 2000);
+    // },[]);
+
+
+
+
+    // return (
+    //     <View style={styles.container}>
+    //         <Text style={styles.infoText}>
+    //             {user ? 'Redirecting to Animals...' : 'Redirecting to Onboarding...'}
+    //         </Text>
+    //     </View>
+    // );
+};
+
+export default Index;
 
 const styles = StyleSheet.create({
   container: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      flexDirection: 'column',
-      margin: 20,
+      padding: 20,
   },
-  box: {
-      width: 150, // Square box
-      height: 150, // Square box
-      backgroundColor: '#4CAF50', // Green color
-      justifyContent: 'center',
-      alignItems: 'center',
-      margin: 10,
-      borderRadius: 15, // Rounded corners
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.8,
-      shadowRadius: 5,
-      elevation: 5, // Android shadow
-  },
-  boxText: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      color: '#fff', // White text color
+  infoText: {
+      fontSize: 16,
+      color: '#333',
   },
 });

@@ -90,7 +90,7 @@ const Index = () => {
     setLoading(true);
     const animalKind = 'AnimalPost';
     try {
-      const response = await axios.get(`http://192.168.47.35:5000/api/posts?page=${pageNumber}&kind=${animalKind}`);
+      const response = await axios.get(`https://pashupanta-backend-production.up.railway.app/api/posts?page=${pageNumber}&kind=${animalKind}`);
       const { data: fetchedData, totalPages: serverTotalPages } = response.data;
 
       if (pageNumber === 1) {
@@ -143,7 +143,7 @@ const Index = () => {
 
   if (loading && page === 1) return 
   <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
-    <ActivityIndicator size="large" color="#0000ff" />; // Show loading indicator only for initial load
+    <ActivityIndicator size="large" color="#0000ff" />;
   </View>
   if (error) return <Text>Error: {error.message}</Text>;
 
@@ -155,7 +155,7 @@ const Index = () => {
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.topContainer}>
       <View style={styles.backAndLocationContainer}>
-      <FontAwesome6 name="arrow-left" size={24} color="black" onPress={()=> router.replace("/")} />
+      {/* <FontAwesome6 name="arrow-left" size={24} color="black" onPress={()=> router.replace("/")} /> */}
           <Pressable style={styles.locationContainer} onPress={toggleLocationModal}>
             <Entypo name="location" size={24} color="black" />
             {locationName ?
@@ -194,10 +194,8 @@ const Index = () => {
         }
       />:
       <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
-      <Image
-      source={{ uri: 'https://media.giphy.com/media/11qwfyd5mTJvDa/giphy.gif' }}
-      style={styles.no_posts_video}
-    />
+  <Image source={{uri:"https://res.cloudinary.com/dxxe5dxub/image/upload/v1731414590/sad_cow_rtvxow.png"}}
+        style={{ height:200,width:"90%" }}/>
       <Text style={{fontSize:24,fontWeight:"bold"}}>No Posts to Show Currently</Text>
     </View>
       }

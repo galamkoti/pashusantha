@@ -2,9 +2,11 @@ import { View, Text, Image, StyleSheet, TouchableOpacity,FlatList } from 'react-
 import React, { useEffect } from 'react';
 import { useSavePost } from '../context/SavePostContext';
 import { router } from 'expo-router';
+import { useLanguage } from '../context/LanguageContext';
 
 const FavoritesScreen = () => {
     const { savedPosts } = useSavePost();
+    const {translations}=useLanguage();
 
     useEffect(() => {
         console.log("Saved Posts:", savedPosts); // Debugging savedPosts
@@ -23,31 +25,36 @@ const FavoritesScreen = () => {
                     <Image source={{ uri: firstImage }} style={styles.postImage} />  // Display the first image
                 )}
                 <View style={styles.postInfo}>
-                    <Text style={styles.postTitle}>{item.breed} - ${item.price}</Text>
-                    <Text style={styles.postDetails}>Age: {item.age} years | Location: {item.locationName}</Text>
+                <Text style={styles.postTitle}>{translations[item.animalType] || item.animalType}  - {translations[item.breed] || item.breed}</Text>
+                    <Text style={styles.postTitle}>{translations.price||"Price"}: {item.price} </Text>
                 </View>
             </TouchableOpacity>
         );
     };
 
     return (
+        <>
+        {savedPosts.length > 0 ? (
         <View style={styles.container}>
-            {savedPosts.length > 0 ? (
+            
                 <FlatList
                     data={savedPosts}
                     renderItem={renderPostItem}
                     keyExtractor={(item) => item._id}
                 />
+                </View>
             ) : (
-                <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
-                <Image
+                <View style={{flex:1,justifyContent:"center",alignItems:"center",backgroundColor:"#fff"}}>
+                {/* <Image
                 source={{ uri: 'https://media.giphy.com/media/11qwfyd5mTJvDa/giphy.gif' }}
                 style={styles.no_posts_video}
-              />
-                <Text style={styles.emptyText}>No saved posts.</Text>
+              /> */}
+              <Image source={{uri:"https://res.cloudinary.com/dxxe5dxub/image/upload/v1731414590/sad_cow_rtvxow.png"}}
+                    style={{ height:200,width:"90%" }}/>
+                <Text style={styles.emptyText}>{translations.no_saved_posts||"No saved posts."}</Text>
                 </View>
             )}
-        </View>
+      </>
     );
 };
 
@@ -55,7 +62,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: '#f8f8f8',
+        backgroundColor: '#f2f2f2',
+        shadowColor: 'white',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 5,
+        elevation: 10,
     },
     postItem: {
         flexDirection: 'row',
@@ -83,9 +95,9 @@ const styles = StyleSheet.create({
     },
     emptyText: {
         textAlign: 'center',
-        fontSize: 18,
         marginTop: 50,
-        color: '#555',
+        fontSize:24,
+        fontWeight:"bold"
     },
     no_posts_video:{
         height:300,

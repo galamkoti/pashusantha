@@ -4,7 +4,7 @@ import Entypo from '@expo/vector-icons/Entypo';
 import { useLocation } from '../../context/LocationContext';
 
 const LocationModal = ({ visible, onClose }) => {
-    const {fetchLocation,locationName}=useLocation();
+    const {fetchLocation,formattedAddress}=useLocation();
   return (
     <Modal
       visible={visible}
@@ -18,9 +18,13 @@ const LocationModal = ({ visible, onClose }) => {
             <Entypo name="cross" size={24} color="black" />
           </Pressable>
           <Text style={styles.modalTitle}>Location Details</Text>
-          <Text style={styles.locationText}>{locationName}</Text>
-           <Button title="Refresh Location" onPress={fetchLocation} />
-          <Button title="Close" onPress={onClose} />
+          <Text style={styles.locationText}>{formattedAddress}</Text>
+           <Pressable onPress={()=>fetchLocation()} style={{borderRadius:5,backgroundColor:'black',padding:10,margin:10}}>
+            <Text style={{fontSize:14,fontWeight:"400",color:"white"}}>Refresh Location</Text>
+           </Pressable>
+          <Pressable onPress={()=>onClose()} style={{borderRadius:5,backgroundColor:'black',padding:10,margin:10}}>
+            <Text style={{fontSize:14,fontWeight:"400",color:"white"}}>Close</Text>
+           </Pressable>
         </View>
       </View>
     </Modal>
