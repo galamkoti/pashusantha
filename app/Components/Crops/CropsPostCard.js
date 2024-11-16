@@ -11,8 +11,9 @@ const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-750344446393431
 const PostCard = ({ category, breed, datePosted, image,price, onPostPressed }) => {
   const {translations} = useLanguage();
 const day= new Date(datePosted).getDate();
-const month= new Date(datePosted).getMonth();
+const month= new Date(datePosted).getMonth()+1;
 const year= new Date(datePosted).getFullYear();
+console.log(day,month,year)
 const formattedDate = day+'-'+month+'-'+year;  // Convert datePosted to readable format
   
   const bannerRef = useRef(null);

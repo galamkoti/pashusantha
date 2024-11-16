@@ -9,7 +9,7 @@ const MyPostCard = ({ category, breed, price, post_id,datePosted, image, userNam
   const {translations} = useLanguage();
 
   const day= new Date(datePosted).getDate();
-  const month= new Date(datePosted).getMonth();
+  const month= new Date(datePosted).getMonth()+1;
   const year= new Date(datePosted).getFullYear();
   const formattedDate = day+'-'+month+'-'+year; 
 

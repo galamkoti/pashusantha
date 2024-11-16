@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, Alert, Image, Pressable,Button, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, Alert, Image, Pressable,Button, TouchableOpacity, ActivityIndicator, Linking } from 'react-native';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useLanguage } from '../context/LanguageContext';
@@ -11,6 +11,7 @@ import ImagePickerModal from '../Components/Animal/ImagePickerModal';
 import axios from 'axios';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { router } from 'expo-router';
+import { usePosts } from '../context/postsContext';
 
 const App = () => {
   const { translations } = useLanguage();
@@ -33,6 +34,7 @@ const App = () => {
   const [selectedImageBox, setSelectedImageBox] = useState(null);
   const [video, setVideo] = useState(null);
   const [loading,setLoading]=useState(null);
+  const {addPost}=usePosts();
 
   const openImagePickerModal = (boxIndex) => {
     setSelectedImageBox(boxIndex);
@@ -127,32 +129,63 @@ const App = () => {
   };
 
   const pickImageFromGallery = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1,1],
-      quality: 0.25,
-    });
-    if (!result.canceled) {
-      const newImages = [...images];
-      newImages[selectedImageBox] = result.assets[0].uri;
-      setImages(newImages);
+    const {status:mediaStatus}= await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if(mediaStatus=='granted'){
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1,1],
+        quality: 0.25,
+      });
+      if (!result.canceled) {
+        const newImages = [...images];
+        newImages[selectedImageBox] = result.assets[0].uri;
+        setImages(newImages);
+      }
+      closeImagePickerModal();
     }
-    closeImagePickerModal();
+    else{
+      Alert.alert('Permisssion Denied', 'Gallery permission is required to use this feature',[
+        {
+            text:"CANCEL",
+            style:"cancel"
+        },
+        {
+            text:"Go Settings",
+            onPress: () => Linking.openSettings(),
+        }
+    ]);
+    }
   };
 
   const pickImageFromCamera = async () => {
-    const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [1,1],
-      quality: 0.25,
-    });
-    if (!result.canceled) {
-      const newImages = [...images];
-      newImages[selectedImageBox] = result.assets[0].uri;
-      setImages(newImages);
+    const {status:mediaStatus}= await ImagePicker.requestCameraPermissionsAsync();
+    if(mediaStatus=='granted'){
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1,1],
+        quality: 0.25,
+      });
+      if (!result.canceled) {
+        const newImages = [...images];
+        newImages[selectedImageBox] = result.assets[0].uri;
+        setImages(newImages);
+      }
+      closeImagePickerModal();
     }
-    closeImagePickerModal();
+    else{
+      Alert.alert('Permisssion Denied', 'Camera permission is required to use this feature',[
+        {
+            text:"CANCEL",
+            style:"cancel"
+        },
+        {
+            text:"Go Settings",
+            onPress: () => Linking.openSettings(),
+        }
+    ]);
+    }
   };
 
 
@@ -231,10 +264,12 @@ const App = () => {
         },
       });
 
+      console.log("data added",response.data.singlePostData);
+
       if (response.data.message === "Animal Post Created!!") {
         setLoading(false);
-        // router.replace("/Animals/Animal");
-        Alert.alert(translations.successful||'Successful', translations.pashu_details_submitted_successfully||'pashu details submitted successfully! Go to Home Page and refresh');
+        addPost(response.data.singlePostData);
+        Alert.alert(translations.successful||'Successful', translations.pashu_details_submitted_successfully||'pashu details submitted successfully!');
       } else {
         setLoading(false);
         Alert.alert(translations.error||'Error', translations.Something_went_wrong_Please_try_again||'Something went wrong. Please try again.');

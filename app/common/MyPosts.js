@@ -126,7 +126,10 @@ const handlePostPress = (item) => {
     </View>);
   }
   if (loading && page === 1) return <ActivityIndicator size="large" color="#0000ff" />; // Show loading indicator only for initial load
-  if (error) return <Text>Error: {error.message}</Text>;
+  if (error) return (
+    <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
+      <Text style={{fontSize:22,fontWeight:"bold"}}>Please Check your Internet</Text>
+      </View>);
 
   return (
     <View style={styles.mainContainer}>
