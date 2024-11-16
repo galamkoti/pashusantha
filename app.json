@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Vikrai",
+    "name": "PashuSantha",
     "slug": "vikrai-mobile",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/logo.jpg",
     "userInterfaceStyle": "light",
@@ -23,7 +23,7 @@
       "package": "com.koti9032.vikraimobile"
     },
     "web": {
-      "favicon": "./assets/favicon.png",
+      "favicon": "./assets/logo.jpg",
       "bundler": "metro"
     },
     "plugins": [

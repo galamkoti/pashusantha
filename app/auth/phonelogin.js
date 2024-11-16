@@ -10,7 +10,7 @@ import Entypo from '@expo/vector-icons/Entypo';
 const PhoneAuthScreen = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
-  const [userName, setUserName] = useState('resh');
+  const [userName, setUserName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const { loginUser,userLoading,setUserLoading } = useUserData();
   const { translations } = useLanguage();
@@ -35,7 +35,7 @@ const PhoneAuthScreen = () => {
       }
       setUserLoading(false);
     } catch (error) {
-      Alert.alert(error.message);
+      Alert.alert("InValid PhoneNumber or Password");
       setUserLoading(false);
     }
   }
@@ -66,6 +66,21 @@ const PhoneAuthScreen = () => {
       <View style={{ flexDirection: "column", alignItems: "center" }}>
         <Image source={require("../../assets/logo.jpg")} style={styles.logo} />
         <Text style={{ fontSize: 24, fontWeight: "bold", margin: 20 }}>{translations.login_with_mobile || "Login With Phone Number"}</Text>
+        <TextInput
+          placeholder={translations.enter_your_name || "Enter Your Name"}
+          value={userName}
+          onChangeText={setUserName}
+          keyboardType="default"
+          style={{
+            borderWidth: 1,
+            borderBottomColor: 'gray',
+            marginBottom: 20,
+            borderRadius: 10,
+            padding: 10,
+            width: "90%",
+            fontSize:18
+          }}
+        />
         <TextInput
           placeholder={translations.enter_mobile_number || "Enter phone number"}
           value={phoneNumber}
@@ -131,7 +146,7 @@ export default PhoneAuthScreen;
 
 const styles = StyleSheet.create({
   logo: {
-    height: 200,
+    height: 250,
     width: 300,
     borderRadius: 50,
     justifyContent: "center",

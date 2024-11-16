@@ -3,14 +3,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { useSavePost } from '../context/SavePostContext'; // Import the save context
-import * as Sharing from 'expo-sharing'; // Import expo-sharing
 import { useUserData } from '../context/UserContext'; 
 import { useLanguage } from '../context/LanguageContext';
 import { Video, ResizeMode } from 'expo-av';
 import { useInterstitialAd, TestIds, BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 import { router } from 'expo-router';
 
-const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy';
+const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-7503444463934319/7517812846';
 
 const AnimalPostDetails = () => {
     const { isLoaded, isClosed, load, show } = useInterstitialAd(TestIds.INTERSTITIAL);
@@ -222,16 +221,16 @@ const AnimalPostDetails = () => {
                 <FontAwesome name="share" size={24} color="black" />
                 <Text style={styles.shareText}>{translations.share_post||"Share Post"}</Text>
             </TouchableOpacity> */}
-            {/* <BannerAd
+            <BannerAd
             unitId={adUnitId}
-            size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+            size={BannerAdSize.INLINE_ADAPTIVE_BANNER}
             requestOptions={{
                 networkExtras: {
                 collapsible: 'bottom',
                 },
             }}
             />
-             <Button
+             {/* <Button
         title="Navigate to next screen"
         onPress={() => {
           if (isLoaded) {
