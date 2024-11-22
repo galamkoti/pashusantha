@@ -1,6 +1,6 @@
 import { router, Tabs } from 'expo-router';
 import { MaterialCommunityIcons, Feather, MaterialIcons ,Ionicons} from '@expo/vector-icons';
-import { Image, Pressable, StyleSheet, TouchableOpacity ,View } from 'react-native';
+import {StyleSheet, TouchableOpacity ,View } from 'react-native';
 import { useLanguage } from '../context/LanguageContext';
 
 const CustomTabBarButton =({children,onPress}) =>(

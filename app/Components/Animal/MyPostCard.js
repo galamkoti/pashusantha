@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity,Pressable, Alert } from 'react-native';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { useLanguage } from '../../context/LanguageContext';
 import {MaterialIcons} from '@expo/vector-icons';
 import axios from 'axios';
+import { BannerAd, BannerAdSize, TestIds, useInterstitialAd } from 'react-native-google-mobile-ads';
+
+const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-7503444463934319/9600641589';
 
 const MyPostCard = ({ category, breed, price, post_id,datePosted, image, userName, description, onCallPress ,confirmDeletePost, onPostPressed }) => {
   const {translations} = useLanguage();
+  const bannerRef = useRef(null);
 
   const day= new Date(datePosted).getDate();
   const month= new Date(datePosted).getMonth()+1;
@@ -29,6 +33,7 @@ const MyPostCard = ({ category, breed, price, post_id,datePosted, image, userNam
     ])
   }
   return (
+    <>
     <Pressable style={styles.card} onPress={onPostPressed}>
       {/* Category and Distance */}
       <View style={styles.header}>
@@ -54,6 +59,12 @@ const MyPostCard = ({ category, breed, price, post_id,datePosted, image, userNam
         </View>
       </View>
     </Pressable>
+    <View style={{justifyContent:"center",alignItems:"center"}}>
+      <BannerAd ref={bannerRef} unitId={adUnitId} size={BannerAdSize.BANNER} />
+    </View>
+    {/* Interstitial ad */}
+    
+    </>
   );
 };
 

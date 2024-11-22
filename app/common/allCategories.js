@@ -1,8 +1,10 @@
 import { router } from 'expo-router';
-import React from 'react';
-import {Text, Image, StyleSheet, FlatList, Dimensions, Pressable } from 'react-native';
+import React, { useRef } from 'react';
+import {Text, Image, StyleSheet, FlatList, Dimensions, Pressable, View } from 'react-native';
 import { useLanguage } from '../context/LanguageContext';
+import { BannerAd, BannerAdSize, TestIds} from 'react-native-google-mobile-ads';
 
+const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-7503444463934319/9600641589';
 
 
 const onPressCategory = async (item) => {
@@ -11,6 +13,7 @@ const onPressCategory = async (item) => {
 
 const AllCategories = () => {
   const {translations}=useLanguage();
+  const bannerRef = useRef(null);
 
   const categories = [
     { name: translations.cows||'Cows', image: "https://res.cloudinary.com/dxxe5dxub/image/upload/v1731414620/cow_e68rwm.jpg" ,value: 'cow' }, 
@@ -26,6 +29,7 @@ const AllCategories = () => {
   );
 
   return (
+    <>
     <FlatList
       data={categories}
       keyExtractor={(item, index) => index.toString()}
@@ -33,6 +37,10 @@ const AllCategories = () => {
       contentContainerStyle={styles.container}
       showsVerticalScrollIndicator={false}
     />
+    <View style={{justifyContent:"center",alignItems:"center"}}>
+      <BannerAd ref={bannerRef} unitId={adUnitId} size={BannerAdSize.MEDIUM_RECTANGLE} />
+    </View>
+    </>
   );
 };
 

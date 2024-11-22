@@ -49,7 +49,7 @@ const ProfileScreen = () => {
 
     const handleWhatsApp = () => {
         // Redirect to WhatsApp with pre-filled message
-        let url = `whatsapp://send?phone=${7981787912}&text=Hi I want to give feedback`;
+        let url = `whatsapp://send?phone=${6309065662}&text=Hi I want to give feedback`;
         Linking.openURL(url).catch(() => {
             alert('Make sure WhatsApp is installed on your device');
         });

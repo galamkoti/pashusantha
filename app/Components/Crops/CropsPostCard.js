@@ -6,7 +6,7 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import HorizontalLine from "./../common/HorizontalLine"
 import { BannerAd, BannerAdSize, TestIds, useForeground } from 'react-native-google-mobile-ads';
 
-const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-7503444463934319/7517812846';
+const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-7503444463934319/9600641589';
 
 const PostCard = ({ category, breed, datePosted, image,price, onPostPressed }) => {
   const {translations} = useLanguage();
@@ -45,8 +45,7 @@ const formattedDate = day+'-'+month+'-'+year;  // Convert datePosted to readable
         </View>
       </View>
     </Pressable>
-      {/* <BannerAd ref={bannerRef} unitId={adUnitId} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} /> */}
-     
+      <BannerAd ref={bannerRef} unitId={adUnitId} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
     </>
   );
 };
@@ -58,7 +57,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     width: '100%',
     padding: 10,
-    marginBottom: 30,
+    marginBottom: 15,
+    marginTop:15,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.5,

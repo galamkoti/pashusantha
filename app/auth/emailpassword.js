@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, Alert, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
+import { View, TextInput, Text,  Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useUserData } from '../context/UserContext';
 import { useLanguage } from '../context/LanguageContext'
 import Entypo from '@expo/vector-icons/Entypo';

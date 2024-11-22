@@ -15,7 +15,7 @@ const fetchTranslationsFromAPI = async (lang) => {
     }
 }
 export const LanguageProvider = ({ children }) => {
-    const [language, setLanguage] = useState('');
+    const [language, setLanguage] = useState('te');
     const [translations, setTranslations] = useState({});
     const [languageLoading, setLanguageLoading] = useState(false);
     useEffect(() => {

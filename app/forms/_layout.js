@@ -9,9 +9,6 @@ const FormsLayout =() =>{
             <Stack.Screen name='animal' options={{headerTitle : translations.fill_pashu_data||'Fill Pashu Data' ,headerLeft:()=>(
                 <Ionicons name="arrow-back" size={30} color="black" onPress={()=> router.back()} style={{marginRight: 20}}/>
             )}}/>
-            <Stack.Screen name='crops' options={{headerTitle : 'Crops Form' ,headerLeft:()=>(
-                <Ionicons name="arrow-back" size={30} color="black" onPress={()=> router.back()} style={{marginRight: 20}}/>
-            )}}/>
             
         </Stack>
     );

@@ -6,13 +6,12 @@ import { useSavePost } from '../context/SavePostContext'; // Import the save con
 import { useUserData } from '../context/UserContext'; 
 import { useLanguage } from '../context/LanguageContext';
 import { Video, ResizeMode } from 'expo-av';
-import { useInterstitialAd, TestIds, BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
+import { TestIds, BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 import { router } from 'expo-router';
 
-const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-7503444463934319/7517812846';
+const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-7503444463934319/9600641589';
 
 const AnimalPostDetails = () => {
-    const { isLoaded, isClosed, load, show } = useInterstitialAd(TestIds.INTERSTITIAL);
     const item = useLocalSearchParams(); 
     const {user} = useUserData();
     const {translations} = useLanguage();
@@ -27,19 +26,6 @@ const AnimalPostDetails = () => {
     const imageArray = images ? images.split(',') : [];  // Split images into an array
     const mediaArray = [...imageArray]; // Add images to the array first
     if (videos) mediaArray.push({ type: 'video', uri: videos }); // Add video after images if available
-
-    useEffect(() => {
-        // Start loading the interstitial straight away
-        load();
-      }, [load]);
-    
-      useEffect(() => {
-        if (isClosed) {
-          // Action after the ad is closed
-        //   navigation.navigate('NextScreen');
-        router.back();
-        }
-      }, [isClosed]);
 
       
     useEffect(() => {
@@ -84,19 +70,6 @@ const AnimalPostDetails = () => {
     }
     };
 
-    // Function to share the post details
-    // const sharePost = async () => {
-    //     try {
-    //         const message = `Check out this pashu`;
-    //         await Sharing.shareAsync(null, {
-    //             dialogTitle: 'Share Animal Post',
-    //             mimeType: 'text/plain',
-    //             message: message,
-    //         });
-    //     } catch (error) {
-    //         Alert.alert('Error', 'There was a problem sharing the post.');
-    //     }
-    // };
 
     const handleCallSeller = () => {
         if(!user){
@@ -216,32 +189,15 @@ const AnimalPostDetails = () => {
                 <Text style={styles.saveText}>{isSaved ? 'Saved to Favorites' : 'Save Post'}</Text>
             </TouchableOpacity>
 
-            {/* Share Post Button */}
-            {/* <TouchableOpacity style={styles.shareButton} onPress={sharePost}>
-                <FontAwesome name="share" size={24} color="black" />
-                <Text style={styles.shareText}>{translations.share_post||"Share Post"}</Text>
-            </TouchableOpacity> */}
             <BannerAd
             unitId={adUnitId}
-            size={BannerAdSize.INLINE_ADAPTIVE_BANNER}
+            size={BannerAdSize.MEDIUM_RECTANGLE}
             requestOptions={{
                 networkExtras: {
                 collapsible: 'bottom',
                 },
             }}
             />
-             {/* <Button
-        title="Navigate to next screen"
-        onPress={() => {
-          if (isLoaded) {
-            show();
-          } else {
-            // No advert ready to show yet
-            // navigation.navigate('NextScreen');
-            router.back();
-          }
-        }}
-      /> */}
         </ScrollView>
     );
 };
@@ -256,10 +212,11 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     mediaContent: {
-        width: 300,
+        width: 320,
         height: 350,  // Same height and width for both images and videos
         borderRadius: 10,
         marginRight: 10,  // Add some space between items
+        resizeMode:'stretch'
     },
     buttons: {
         marginTop: 10,
