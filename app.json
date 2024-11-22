@@ -2,7 +2,7 @@
   "expo": {
     "name": "PashuSantha",
     "slug": "vikrai-mobile",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/logo.jpg",
     "userInterfaceStyle": "light",
@@ -20,7 +20,7 @@
         "foregroundImage": "./assets/logo.jpg",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.koti9032.vikraimobile"
+      "package": "com.koti9032.pashusantha"
     },
     "web": {
       "favicon": "./assets/logo.jpg",
