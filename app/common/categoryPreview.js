@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, Alert, ActivityIndicator, Text, RefreshControl, Image } from 'react-native';
+import { View, StyleSheet, Alert, ActivityIndicator, Text, RefreshControl, Image } from 'react-native';
 import { FlashList } from "@shopify/flash-list";
 
 import axios from 'axios';

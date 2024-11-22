@@ -270,6 +270,7 @@ const App = () => {
         setLoading(false);
         addPost(response.data.singlePostData);
         Alert.alert(translations.successful||'Successful', translations.pashu_details_submitted_successfully||'pashu details submitted successfully!');
+        router.back();
       } else {
         setLoading(false);
         Alert.alert(translations.error||'Error', translations.Something_went_wrong_Please_try_again||'Something went wrong. Please try again.');

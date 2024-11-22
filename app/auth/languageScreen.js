@@ -1,9 +1,6 @@
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Pressable } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext';
-import {CustomBottomSheetModal} from '../Components/Animal/CustomBottomSheetModal'
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import {BottomSheetModalProvider} from '@gorhom/bottom-sheet'
 import { router } from 'expo-router';
 
 const languageScreen = () => {
