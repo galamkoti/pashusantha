@@ -6,7 +6,7 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import HorizontalLine from "./../common/HorizontalLine"
 import { BannerAd, BannerAdSize, TestIds, useForeground } from 'react-native-google-mobile-ads';
 
-const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-7503444463934319/9600641589';
+const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-3660460140096409/9035435301';
 
 const PostCard = ({ category, breed, datePosted, image,price, onPostPressed }) => {
   const {translations} = useLanguage();

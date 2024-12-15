@@ -76,7 +76,7 @@ const Index = () => {
     const splashTimeout = setTimeout(() => {
       setShowSplash(false); // Hide splash screen after 3 seconds
       fetchPosts(); // Fetch posts once splash screen is hidden
-    }, 2000);
+    }, 100);
 
     return () => clearTimeout(splashTimeout); // Cleanup the timeout if component unmounts early
   }, []);

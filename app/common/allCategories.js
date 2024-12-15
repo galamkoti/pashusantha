@@ -4,7 +4,7 @@ import {Text, Image, StyleSheet, FlatList, Dimensions, Pressable, View } from 'r
 import { useLanguage } from '../context/LanguageContext';
 import { BannerAd, BannerAdSize, TestIds} from 'react-native-google-mobile-ads';
 
-const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-7503444463934319/9600641589';
+const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-3660460140096409/9035435301';
 
 
 const onPressCategory = async (item) => {

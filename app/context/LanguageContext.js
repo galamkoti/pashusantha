@@ -4,60 +4,64 @@ import axios from 'axios';
 
 const LanguageContext = createContext();
 
-const fetchTranslationsFromAPI = async (lang) => {
-    try {
-        const response = await axios.get(`https://pashupanta-backend-production.up.railway.app/language?lng=${lang}`);
-        const data = response.data;
-        return data;
-    } catch (error) {
-        console.error('Error fetching translations:', error);
-        return {};
-    }
-}
 export const LanguageProvider = ({ children }) => {
-    const [language, setLanguage] = useState('te');
+    const [language, setLanguage] = useState(null); // Use null as the initial value for better async handling
     const [translations, setTranslations] = useState({});
-    const [languageLoading, setLanguageLoading] = useState(false);
+    const [languageLoading, setLanguageLoading] = useState(true);
+
+    // Load language from AsyncStorage on mount
     useEffect(() => {
         const loadLanguage = async () => {
             try {
-                const languagefetched = await AsyncStorage.getItem("pashupanta_lang");
-                if (languagefetched) {
-                    setLanguage(languagefetched)
+                const storedLanguage = await AsyncStorage.getItem("pashupanta_lang");
+                if (storedLanguage) {
+                    setLanguage(storedLanguage);
+                } else {
+                    setLanguage('en'); // Default language
                 }
             } catch (error) {
                 console.error('Error loading language:', error);
+            } finally {
+                setLanguageLoading(false);
             }
-        }
+        };
         loadLanguage();
-    }, [])
+    }, []);
 
+    // Fetch translations when language changes
     useEffect(() => {
         const fetchTranslations = async () => {
-            const translationsData = await fetchTranslationsFromAPI(language);
-            setTranslations(translationsData);
-            setLanguageLoading(false);
-        }
+            if (!language) return; // Ensure language is set before fetching
+            try {
+                setLanguageLoading(true);
+                const response = await axios.get(`https://pashupanta-backend-production.up.railway.app/language?lng=${language}`);
+                setTranslations(response.data);
+            } catch (error) {
+                console.error('Error fetching translations:', error);
+            } finally {
+                setLanguageLoading(false);
+            }
+        };
         fetchTranslations();
-    }, [language])
+    }, [language]);
 
+    // Change language and update AsyncStorage
     const changeLanguage = async (lang) => {
         try {
             await AsyncStorage.setItem("pashupanta_lang", lang);
             setLanguage(lang);
-
         } catch (error) {
-            console.log("Error saving Language", error);
+            console.error("Error saving language:", error);
         }
-    }
+    };
 
     return (
-        <LanguageContext.Provider value={{language,translations,languageLoading,changeLanguage}}>
+        <LanguageContext.Provider value={{ language, translations, languageLoading, changeLanguage }}>
             {children}
         </LanguageContext.Provider>
-    )
-}
+    );
+};
 
-export const useLanguage = () =>{
+export const useLanguage = () => {
     return useContext(LanguageContext);
-}
+};

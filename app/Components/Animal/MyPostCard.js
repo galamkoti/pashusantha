@@ -6,7 +6,7 @@ import {MaterialIcons} from '@expo/vector-icons';
 import axios from 'axios';
 import { BannerAd, BannerAdSize, TestIds, useInterstitialAd } from 'react-native-google-mobile-ads';
 
-const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-7503444463934319/9600641589';
+const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-3660460140096409/9035435301';
 
 const MyPostCard = ({ category, breed, price, post_id,datePosted, image, userName, description, onCallPress ,confirmDeletePost, onPostPressed }) => {
   const {translations} = useLanguage();
