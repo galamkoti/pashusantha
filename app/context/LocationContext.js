@@ -46,7 +46,7 @@ export const LocationProvider = ({ children }) => {
             console.log("a", address)
             if (address.length > 0) {
                 const addressDetails = address[0];
-                const formattedAddress = ` ${addressDetails.district || ''}`;
+                const formattedAddress = addressDetails.district!=null? ` ${addressDetails.district + "," + addressDetails.city || ''}`:`${ addressDetails.city|| ''}`;
                 console.log("add", formattedAddress)
                 setLocationName(formattedAddress);
                 const addressToSaveInPost= ` ${addressDetails.formattedAddress || ''}`;

@@ -1,271 +1,324 @@
-import { View, Text, Image, StyleSheet, Button, ScrollView, TouchableOpacity, Alert, Linking, FlatList } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  Button,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+  Linking,
+  FlatList,
+} from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
-import { useSavePost } from '../context/SavePostContext'; // Import the save context
-import { useUserData } from '../context/UserContext'; 
-import { useLanguage } from '../context/LanguageContext';
 import { Video, ResizeMode } from 'expo-av';
-import { TestIds, BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
+import {
+  TestIds,
+  BannerAd,
+  BannerAdSize,
+  RewardedAd,
+  RewardedAdEventType,
+} from 'react-native-google-mobile-ads';
+import { useSavePost } from '../context/SavePostContext';
+import { useUserData } from '../context/UserContext';
+import { useLanguage } from '../context/LanguageContext';
 import { router } from 'expo-router';
 
-const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-7503444463934319/9600641589';
+// Define ad unit IDs based on environment
+const BanneradUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-3660460140096409/9035435301';
+const RewardadUnitId = __DEV__ ? TestIds.REWARDED : 'ca-app-pub-3660460140096409/7167081176';
+
+// Initialize a rewarded ad
+const rewardedAd = RewardedAd.createForAdRequest(RewardadUnitId, {
+  keywords: ['fashion', 'clothing'],
+});
 
 const AnimalPostDetails = () => {
-    const item = useLocalSearchParams(); 
-    const {user} = useUserData();
-    const {translations} = useLanguage();
-    const { phone, price, animalType, breed, age, images, _id, videos, isBargainable, milkCapacity,lactationPeriod,locationName,pregnancyStatus} = item;  // videos added here
-    const { savedPosts, addPost, removePost } = useSavePost();  // Get context methods
-    const videoRef = useRef(null); // Reference to video player
-    const [status, setStatus] = useState({ isPlaying: false });
+  // Fetch search parameters and user data
+  const item = useLocalSearchParams();
+  const { user } = useUserData();
+  const { translations } = useLanguage();
 
-    const [isSaved, setIsSaved] = useState(false); // State to check if the post is saved
+  // Destructure item properties
+  const {
+    phone,
+    price,
+    animalType,
+    breed,
+    age,
+    images,
+    _id,
+    videos,
+    isBargainable,
+    milkCapacity,
+    locationName,
+    pregnancyStatus,
+  } = item;
 
-    // Prepare a unified data source combining images and video
-    const imageArray = images ? images.split(',') : [];  // Split images into an array
-    const mediaArray = [...imageArray]; // Add images to the array first
-    if (videos) mediaArray.push({ type: 'video', uri: videos }); // Add video after images if available
+  // Fetch saved posts context
+  const { savedPosts, addPost, removePost } = useSavePost();
 
-      
-    useEffect(() => {
-        checkIfSaved(); // Check if the post is already saved
-    }, [savedPosts]);  // Re-run this whenever savedPosts changes
+  // Video playback reference
+  const videoRef = useRef(null);
 
-    // Function to check if the post is already in savedPosts
-    const checkIfSaved = () => {
-        const isAlreadySaved = savedPosts.some(post => post._id === _id);
-        setIsSaved(isAlreadySaved);
+  // State management
+  const [status, setStatus] = useState({ isPlaying: false }); // Video playback status
+  const [isSaved, setIsSaved] = useState(false); // Save post status
+  const [isAdLoaded, setAdLoaded] = useState(false); // Ad load status
+
+  // Setup and manage rewarded ad lifecycle
+  useEffect(() => {
+    rewardedAd.load();
+    rewardedAd.addAdEventListener(RewardedAdEventType.LOADED, () => setAdLoaded(true));
+    rewardedAd.addAdEventListener(RewardedAdEventType.EARNED_REWARD, () => {
+      Linking.openURL(`tel:${phone}`); // Redirect to phone dialer
+    });
+
+    return () => {
+      rewardedAd.removeAllListeners(); // Cleanup listeners
     };
+  }, [phone]);
 
-    // Function to save or unsave the post
-    const toggleSavePost = () => {
-        if(!user){
-            Alert.alert(translations.login||"Login",translations.please_login_to_proceed||"Please Login To Proceed",[
-              {
-                text:translations.cancel||"CANCEL",
-                style:"cancel"
-              },
-              {
-                text:translations.login||"LOGIN",
-                style:'default',
-                onPress: () => {
-                  router.push({pathname:"auth/phonelogin"})
-                }
-              }
-            ])
-          }
-    else{
-        if (isSaved) {
-            // Remove post from saved posts
-            removePost(_id);
-            setIsSaved(false);
-            Alert.alert(translations.removed_from_saved_posts||'Removed from saved Posts');
-        } else {
-            // Add post to saved posts
-            addPost(item);
-            setIsSaved(true);
-            Alert.alert(translations.post_got_saved||'Added to saved Posts');
-        }
+  // Check if the current post is already saved
+  useEffect(() => {
+    const isAlreadySaved = savedPosts.some(post => post._id === _id);
+    setIsSaved(isAlreadySaved);
+  }, [savedPosts]);
+
+  // Convert images and videos into a media array
+  const mediaArray = images ? images.split(',') : [];
+  if (videos) mediaArray.push({ type: 'video', uri: videos });
+
+  // Handle save post toggle
+  const toggleSavePost = () => {
+    if (!user) {
+      Alert.alert(
+        translations.login || 'Login',
+        translations.please_login_to_proceed || 'Please Login To Proceed',
+        [
+          { text: translations.cancel || 'CANCEL', style: 'cancel' },
+          {
+            text: translations.login || 'LOGIN',
+            style: 'default',
+            onPress: () => router.push({ pathname: 'auth/phonelogin' }),
+          },
+        ]
+      );
+    } else {
+      if (isSaved) {
+        removePost(_id);
+        setIsSaved(false);
+        Alert.alert(translations.removed_from_saved_posts || 'Removed from saved Posts');
+      } else {
+        addPost(item);
+        setIsSaved(true);
+        Alert.alert(translations.post_got_saved || 'Added to saved Posts');
+      }
     }
-    };
+  };
 
-
-    const handleCallSeller = () => {
-        if(!user){
-            Alert.alert(translations.login||"Login",translations.please_login_to_proceed||"Please Login To Proceed",[
-              {
-                text:translations.cancel||"CANCEL",
-                style:"cancel"
-              },
-              {
-                text:translations.login||"LOGIN",
-                style:'default',
-                onPress: () => {
-                  router.push({pathname:"auth/phonelogin"})
-                }
+  // Handle call seller action
+  const handleCallSeller = () => {
+    if (!user) {
+      Alert.alert(
+        translations.login || 'Login',
+        translations.please_login_to_proceed || 'Please Login To Proceed',
+        [
+          { text: translations.cancel || 'CANCEL', style: 'cancel' },
+          {
+            text: translations.login || 'LOGIN',
+            style: 'default',
+            onPress: () => router.push({ pathname: 'auth/phonelogin' }),
+          },
+        ]
+      );
+    } else {
+      Alert.alert(
+        translations.call_seller || 'Call Seller',
+        translations.are_you_sure_to_call || 'Are You Sure to Call?',
+        [
+          { text: translations.cancel || 'CANCEL', style: 'cancel' },
+          {
+            text: translations.call || 'CALL',
+            onPress: () => {
+              if (isAdLoaded) {
+                rewardedAd.show(); // Show ad before making the call
+              } else {
+                Linking.openURL(`tel:${phone}`); // Directly make the call
               }
-            ])
-          }
-          else{
+            },
+          },
+        ]
+      );
+    }
+  };
 
-              Alert.alert(translations.call_seller||"Call Seller", translations.are_you_sure_to_call||"Are You Sure to Call?", [
-                  {
-                      text: translations.cancel || "CANCEL",
-                      onPress: () => console.log("Cancel Pressed"),
-                      style: "cancel"
-                  },
-                  {
-                      text: translations.call||"CALL",
-                      onPress: () => {
-                          console.log(user.phone, "calling", phone),
-                          Linking.openURL(`tel:${phone}`)
-                      },
-                      style: "default"
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      {/* Display media content */}
+      <FlatList
+        data={mediaArray}
+        keyExtractor={(media, index) => index.toString()}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        renderItem={({ item }) =>
+          item.type === 'video' ? (
+            <View>
+              <Video
+                ref={videoRef}
+                style={styles.mediaContent}
+                source={{ uri: item.uri }}
+                useNativeControls={false}
+                resizeMode={ResizeMode.CONTAIN}
+                isLooping
+                onPlaybackStatusUpdate={status => setStatus(() => status)}
+              />
+              <View style={styles.buttons}>
+                <Button
+                  title={status.isPlaying ? 'Pause' : 'Play'}
+                  onPress={() =>
+                    status.isPlaying
+                      ? videoRef.current.pauseAsync()
+                      : videoRef.current.playAsync()
                   }
-              ])
-          }
-    }
-
-    return (
-        <ScrollView contentContainerStyle={styles.container} >
-            {/* Media Slider (Images and Video) */}
-            <FlatList
-                data={mediaArray}
-                keyExtractor={(media, index) => index.toString()}  // Unique key for each media item
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                renderItem={({ item }) => (
-                    item.type === 'video' ? (
-                        <View>
-                            <Video
-                                ref={videoRef}
-                                style={styles.mediaContent} // Make video the same size as images
-                                source={{
-                                    uri: item.uri,
-                                }}
-                                useNativeControls={false}
-                                resizeMode={ResizeMode.CONTAIN}
-                                isLooping
-                                onPlaybackStatusUpdate={status => setStatus(() => status)}
-                            />
-                            <View style={styles.buttons}>
-                                <Button
-                                  title={status.isPlaying ? 'Pause' : 'Play'}
-                                  onPress={() =>
-                                    status.isPlaying ? videoRef.current.pauseAsync() : videoRef.current.playAsync()
-                                  }
-                                />
-                            </View>
-                        </View>
-                    ) : (
-                        <Image source={{ uri: item }} style={styles.mediaContent} />  // Display image
-                    )
-                )}
-                style={styles.mediaList}
-            />
-
-            {/* Animal Info */}
-            <Text style={styles.title}>{translations[animalType] || animalType} {translations.for_sale} - {translations[breed] || breed} {translations.belongs_to_breed}</Text>
-
-            {/* Animal Details */}
-            <View style={styles.detailsContainer}>
-            <Text style={styles.label}>{translations.category || "Category"}:</Text>
-                <Text style={styles.value}>{translations[animalType] || animalType}</Text>
-
-                <Text style={styles.label}>{translations.breed || "Breed"}:</Text>
-                <Text style={styles.value}>{translations[breed] || breed}</Text>
-
-                <Text style={styles.label}>{translations.milk_capacity || "Milk Capacity"}:</Text>
-                <Text style={styles.value}>{milkCapacity}{translations.litres}</Text>
-
-                <Text style={styles.label}>{translations.age_of_pashu || "Age"}:</Text>
-                <Text style={styles.value}>{age} { translations.years_old||"years old"}</Text>
-
-                <Text style={styles.label}>{translations.price || "Price"}:</Text>
-                
-                <Text style={styles.value}><FontAwesome5 name="rupee-sign" size={20} color="#555" />{price}</Text>
-
-
-                <Text style={styles.label}>{translations.pregnancy || "Pregnancy Status"}:</Text>
-                <Text style={styles.value}>{pregnancyStatus=='yes'?translations.is_present:translations.not_present||pregnancyStatus}</Text>
-
-                <Text style={styles.label}>{translations.is_bargainable || "Bargainable or Not?"}:</Text>
-                <Text style={styles.value}>{isBargainable=='yes'?translations.can_play_bargain:translations.cannot_play_bargain||isBargainable}</Text>
-                
-                <Text style={styles.label}>{translations.location || "Location"}:</Text>
-                <Text style={styles.value}>{locationName}</Text>
+                />
+              </View>
             </View>
+          ) : (
+            <Image source={{ uri: item }} style={styles.mediaContent} />
+          )
+        }
+        style={styles.mediaList}
+      />
 
-            {/* Call to Action Button */}
-            <TouchableOpacity  onPress={() => handleCallSeller()} style={{backgroundColor:"black",justifyContent:"center",alignItems:"center",padding:5,flexDirection:"row"}}>
-                <FontAwesome name='phone' size={24} color="white" />
-                <Text style={{color:"white",fontSize:20,marginLeft:20}}>{translations.call_seller||"Call Seller"}</Text>
-            </TouchableOpacity>
+      {/* Post details */}
+      <Text style={styles.title}>
+        {translations[animalType] || animalType} {translations.for_sale} - {translations[breed] || breed}{' '}
+        {translations.belongs_to_breed}
+      </Text>
 
-            {/* Save Post Button */}
-            <TouchableOpacity style={styles.saveButton} onPress={toggleSavePost}>
-                <FontAwesome name={isSaved ? "bookmark" : "bookmark-o"} size={24} color={isSaved ? "black" : "#000"} />
-                <Text style={styles.saveText}>{isSaved ? 'Saved to Favorites' : 'Save Post'}</Text>
-            </TouchableOpacity>
+      <View style={styles.detailsContainer}>
+        <Text style={styles.label}>{translations.category || 'Category'}:</Text>
+        <Text style={styles.value}>{translations[animalType] || animalType}</Text>
 
-            <BannerAd
-            unitId={adUnitId}
-            size={BannerAdSize.MEDIUM_RECTANGLE}
-            requestOptions={{
-                networkExtras: {
-                collapsible: 'bottom',
-                },
-            }}
-            />
-        </ScrollView>
-    );
+        <Text style={styles.label}>{translations.breed || 'Breed'}:</Text>
+        <Text style={styles.value}>{translations[breed] || breed}</Text>
+
+        <Text style={styles.label}>{translations.milk_capacity || 'Milk Capacity'}:</Text>
+        <Text style={styles.value}>{milkCapacity} {translations.litres}</Text>
+
+        <Text style={styles.label}>{translations.age_of_pashu || 'Age'}:</Text>
+        <Text style={styles.value}>{age} {translations.years_old || 'years old'}</Text>
+
+        <Text style={styles.label}>{translations.price || 'Price'}:</Text>
+        <Text style={styles.value}><FontAwesome5 name="rupee-sign" size={20} color="#555" />{price}</Text>
+
+        <Text style={styles.label}>{translations.pregnancy || 'Pregnancy Status'}:</Text>
+        <Text style={styles.value}>{pregnancyStatus === 'yes' ? translations.is_present : translations.not_present || pregnancyStatus}</Text>
+
+        <Text style={styles.label}>{translations.is_bargainable || 'Bargainable or Not?'}:</Text>
+        <Text style={styles.value}>{isBargainable === 'yes' ? translations.can_play_bargain : translations.cannot_play_bargain || isBargainable}</Text>
+
+        <Text style={styles.label}>{translations.location || 'Location'}:</Text>
+        <Text style={styles.value}>{locationName}</Text>
+      </View>
+
+      {/* Call Seller Button */}
+      <TouchableOpacity
+        onPress={handleCallSeller}
+        style={{
+          backgroundColor: 'black',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 5,
+          flexDirection: 'row',
+          borderRadius: 5,
+          marginVertical: 10,
+        }}
+      >
+        <FontAwesome name="phone" size={24} color="white" />
+        <Text style={{ color: 'white', fontSize: 20, marginLeft: 20 }}>
+          {translations.call_seller || 'Call Seller'}
+        </Text>
+      </TouchableOpacity>
+
+      {/* Save Post Button */}
+      <TouchableOpacity
+        onPress={toggleSavePost}
+        style={{
+          backgroundColor: isSaved ? '#ffe4c4' : '#f8f8f8',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'row',
+          padding: 10,
+          borderRadius: 5,
+          marginVertical: 10,
+        }}
+      >
+        <FontAwesome
+          name={isSaved ? 'bookmark' : 'bookmark-o'}
+          size={24}
+          color={isSaved ? 'black' : '#000'}
+        />
+        <Text style={{ marginLeft: 10, fontSize: 18 }}>
+          {isSaved ? translations.saved_to_favorites || 'Saved to Favorites' : translations.save_post || 'Save Post'}
+        </Text>
+      </TouchableOpacity>
+
+      {/* Banner Ad */}
+      <BannerAd
+        unitId={BanneradUnitId}
+        size={BannerAdSize.MEDIUM_RECTANGLE}
+        requestOptions={{
+          requestNonPersonalizedAdsOnly: true,
+        }}
+        style={{ marginVertical: 20 }}
+      />
+    </ScrollView>
+  );
 };
 
+// Define styles for the component
 const styles = StyleSheet.create({
-    container: {
-        flexGrow: 1,
-        padding: 20,
-        backgroundColor: '#f8f8f8',
-    },
-    mediaList: {
-        marginBottom: 20,
-    },
-    mediaContent: {
-        width: 320,
-        height: 350,  // Same height and width for both images and videos
-        borderRadius: 10,
-        marginRight: 10,  // Add some space between items
-        resizeMode:'stretch'
-    },
-    buttons: {
-        marginTop: 10,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        textAlign: 'center',
-    },
-    detailsContainer: {
-        marginBottom: 30,
-    },
-    label: {
-        fontSize: 20,
-        fontWeight: '600',
-        marginVertical: 5,
-    },
-    value: {
-        fontSize: 20,
-        marginBottom: 10,
-        color: '#555',
-    },
-    saveButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 10,
-        backgroundColor: '#f8f8f8',
-        borderRadius: 5,
-        marginTop: 20,
-    },
-    saveText: {
-        marginLeft: 10,
-        fontSize: 16,
-    },
-    shareButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 10,
-        backgroundColor: '#f8f8f8',
-        borderRadius: 5,
-        marginTop: 20,
-    },
-    shareText: {
-        marginLeft: 10,
-        fontSize: 16,
-    },
+  container: {
+    flexGrow: 1,
+    padding: 20,
+    backgroundColor: '#f8f8f8',
+  },
+  mediaList: {
+    marginBottom: 20,
+  },
+  mediaContent: {
+    width: 320,
+    height: 350,
+    borderRadius: 10,
+    marginRight: 10,
+    resizeMode: 'stretch',
+  },
+  buttons: {
+    marginTop: 10,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  detailsContainer: {
+    marginBottom: 30,
+  },
+  label: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginVertical: 5,
+  },
+  value: {
+    fontSize: 20,
+    marginBottom: 10,
+    color: '#555',
+  },
 });
 
 export default AnimalPostDetails;
