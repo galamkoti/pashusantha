@@ -258,7 +258,7 @@ const App = () => {
   
   
     try {
-      const response = await axios.post('https://pashupanta-backend-production.up.railway.app/api/animal/create', formData, {
+      const response = await axios.post('https://pashupanta-backend.onrender.com/api/animal/create', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

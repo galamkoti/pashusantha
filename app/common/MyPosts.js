@@ -54,7 +54,7 @@ const renderItem = ({ item }) => {
 const confirmDeletePost = async(post_id) =>{
   setLoadingAtDelete(true);
   try {
-    const result = await axios.delete(`https://pashupanta-backend-production.up.railway.app/api/posts/delete/${post_id}/${user._id}`);
+    const result = await axios.delete(`https://pashupanta-backend.onrender.com/api/posts/delete/${post_id}/${user._id}`);
     // const {data}=result.data;
     console.log("data of deletion",result);
     if(result.status==201){
@@ -78,7 +78,7 @@ const handlePostPress = (item) => {
     setLoading(true);
 
     try {
-      const response = await axios.get(`https://pashupanta-backend-production.up.railway.app/api/posts/myposts/user/${user._id}?page=${pageNumber}`);
+      const response = await axios.get(`https://pashupanta-backend.onrender.com/api/posts/myposts/user/${user._id}?page=${pageNumber}`);
       const { data: fetchedData, totalPages: serverTotalPages } = response.data;
       if (pageNumber === 1) {
         setData(fetchedData); // If it's the first page or a refresh, replace existing posts

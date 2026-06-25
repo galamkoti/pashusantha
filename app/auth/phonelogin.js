@@ -19,7 +19,7 @@ const PhoneAuthScreen = () => {
   const LoginUser = async () => {
     setUserLoading(true);
     try {
-      const response = await axios.post("https://pashupanta-backend-production.up.railway.app/api/user/create", {
+      const response = await axios.post("https://pashupanta-backend.onrender.com/api/user/create", {
         phone: phoneNumber,
         password: password,
         userName: userName

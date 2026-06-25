@@ -61,7 +61,7 @@ const Index = () => {
 
     setLoading(true);
     try {
-      const response = await axios.get(`https://pashupanta-backend-production.up.railway.app/api/posts/getCategory?page=${pageNumber}&animalType=${category}&kind=${kind}`);
+      const response = await axios.get(`https://pashupanta-backend.onrender.com/api/posts/getCategory?page=${pageNumber}&animalType=${category}&kind=${kind}`);
       const { data: fetchedData, totalPages: serverTotalPages } = response.data;
 
       if (pageNumber === 1) {

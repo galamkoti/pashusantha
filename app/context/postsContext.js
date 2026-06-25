@@ -21,7 +21,7 @@ export const PostsContextProvider=({children})=>{
     
         try {
           const response = await axios.get(
-            `https://pashupanta-backend-production.up.railway.app/api/posts?page=${pageNumber}&kind=${animalKind}`
+            `https://pashupanta-backend.onrender.com/api/posts?page=${pageNumber}&kind=${animalKind}`
           );
           const { data: fetchedData, totalPages: serverTotalPages } = response.data;
     

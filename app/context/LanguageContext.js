@@ -34,7 +34,7 @@ export const LanguageProvider = ({ children }) => {
             if (!language) return; // Ensure language is set before fetching
             try {
                 setLanguageLoading(true);
-                const response = await axios.get(`https://pashupanta-backend-production.up.railway.app/language?lng=${language}`);
+                const response = await axios.get(`https://pashupanta-backend.onrender.com/language?lng=${language}`);
                 setTranslations(response.data);
             } catch (error) {
                 console.error('Error fetching translations:', error);
