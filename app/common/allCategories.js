@@ -1,10 +1,7 @@
 import { router } from 'expo-router';
-import React, { useRef } from 'react';
+import React from 'react';
 import {Text, Image, StyleSheet, FlatList, Dimensions, Pressable, View } from 'react-native';
 import { useLanguage } from '../context/LanguageContext';
-import { BannerAd, BannerAdSize, TestIds} from 'react-native-google-mobile-ads';
-
-const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-3660460140096409/9035435301';
 
 
 const onPressCategory = async (item) => {
@@ -37,9 +34,6 @@ const AllCategories = () => {
       contentContainerStyle={styles.container}
       showsVerticalScrollIndicator={false}
     />
-    <View style={{justifyContent:"center",alignItems:"center"}}>
-      <BannerAd ref={bannerRef} unitId={adUnitId} size={BannerAdSize.MEDIUM_RECTANGLE} />
-    </View>
     </>
   );
 };

@@ -14,26 +14,12 @@ import {
 import { useLocalSearchParams } from 'expo-router';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { Video, ResizeMode } from 'expo-av';
-import {
-  TestIds,
-  BannerAd,
-  BannerAdSize,
-  RewardedAd,
-  RewardedAdEventType,
-} from 'react-native-google-mobile-ads';
 import { useSavePost } from '../context/SavePostContext';
 import { useUserData } from '../context/UserContext';
 import { useLanguage } from '../context/LanguageContext';
 import { router } from 'expo-router';
 
 // Define ad unit IDs based on environment
-const BanneradUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-3660460140096409/9035435301';
-const RewardadUnitId = __DEV__ ? TestIds.REWARDED : 'ca-app-pub-3660460140096409/7167081176';
-
-// Initialize a rewarded ad
-const rewardedAd = RewardedAd.createForAdRequest(RewardadUnitId, {
-  keywords: ['fashion', 'clothing'],
-});
 
 const AnimalPostDetails = () => {
   // Fetch search parameters and user data
@@ -66,20 +52,6 @@ const AnimalPostDetails = () => {
   // State management
   const [status, setStatus] = useState({ isPlaying: false }); // Video playback status
   const [isSaved, setIsSaved] = useState(false); // Save post status
-  const [isAdLoaded, setAdLoaded] = useState(false); // Ad load status
-
-  // Setup and manage rewarded ad lifecycle
-  useEffect(() => {
-    rewardedAd.load();
-    rewardedAd.addAdEventListener(RewardedAdEventType.LOADED, () => setAdLoaded(true));
-    rewardedAd.addAdEventListener(RewardedAdEventType.EARNED_REWARD, () => {
-      Linking.openURL(`tel:${phone}`); // Redirect to phone dialer
-    });
-
-    return () => {
-      rewardedAd.removeAllListeners(); // Cleanup listeners
-    };
-  }, [phone]);
 
   // Check if the current post is already saved
   useEffect(() => {
@@ -143,11 +115,7 @@ const AnimalPostDetails = () => {
           {
             text: translations.call || 'CALL',
             onPress: () => {
-              if (isAdLoaded) {
-                rewardedAd.show(); // Show ad before making the call
-              } else {
-                Linking.openURL(`tel:${phone}`); // Directly make the call
-              }
+              Linking.openURL(`tel:${phone}`); // Directly make the call
             },
           },
         ]
@@ -267,15 +235,6 @@ const AnimalPostDetails = () => {
         </Text>
       </TouchableOpacity>
 
-      {/* Banner Ad */}
-      <BannerAd
-        unitId={BanneradUnitId}
-        size={BannerAdSize.MEDIUM_RECTANGLE}
-        requestOptions={{
-          requestNonPersonalizedAdsOnly: true,
-        }}
-        style={{ marginVertical: 20 }}
-      />
     </ScrollView>
   );
 };
