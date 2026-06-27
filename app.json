@@ -2,13 +2,19 @@
   "expo": {
     "name": "PashuSantha",
     "slug": "vikrai-mobile",
+    "sdkVersion": "56.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "version": "1.0.2",
     "orientation": "portrait",
-    "icon": "./assets/logo.jpg",
+    "icon": "./assets/farm-animals-amico.png",
     "userInterfaceStyle": "light",
     "scheme": "vikrai",
     "splash": {
-      "image": "./assets/logo.jpg",
+      "image": "./assets/farm-animals-amico.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,17 +23,19 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logo.jpg",
+        "foregroundImage": "./assets/farm-animals-amico.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.koti9032.vikraimobile"
     },
     "web": {
-      "favicon": "./assets/logo.jpg",
+      "favicon": "./assets/farm-animals-amico.png",
       "bundler": "metro"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-splash-screen",
+      "expo-status-bar"
     ],
     "extra": {
       "eas": {

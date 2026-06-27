@@ -68,7 +68,7 @@ const PhoneAuthScreen = () => {
       {!verificationSent ? (
         <>
           <View style={{ flexDirection: "column", alignItems: "center" }}>
-            <Image source={require("../../assets/logo.jpg")} style={styles.logo} />
+            <Image source={require("../../assets/farm-animals-amico.png")} style={styles.logo} />
             <Text style={{ fontSize: 24, fontWeight: "bold", margin: 20 }}>{translations.login_with_mobile || "Login With Phone Number"}</Text>
             <TextInput
               placeholder={translations.enter_mobile_number ||"Enter phone number"}

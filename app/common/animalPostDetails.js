@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
-import { Video, ResizeMode } from 'expo-av';
+// import { Video, ResizeMode } from 'expo-av';
 import { useSavePost } from '../context/SavePostContext';
 import { useUserData } from '../context/UserContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -47,10 +47,10 @@ const AnimalPostDetails = () => {
   const { savedPosts, addPost, removePost } = useSavePost();
 
   // Video playback reference
-  const videoRef = useRef(null);
+  // const videoRef = useRef(null);
 
   // State management
-  const [status, setStatus] = useState({ isPlaying: false }); // Video playback status
+  // const [status, setStatus] = useState({ isPlaying: false }); // Video playback status
   const [isSaved, setIsSaved] = useState(false); // Save post status
 
   // Check if the current post is already saved
@@ -133,26 +133,8 @@ const AnimalPostDetails = () => {
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) =>
           item.type === 'video' ? (
-            <View>
-              <Video
-                ref={videoRef}
-                style={styles.mediaContent}
-                source={{ uri: item.uri }}
-                useNativeControls={false}
-                resizeMode={ResizeMode.CONTAIN}
-                isLooping
-                onPlaybackStatusUpdate={status => setStatus(() => status)}
-              />
-              <View style={styles.buttons}>
-                <Button
-                  title={status.isPlaying ? 'Pause' : 'Play'}
-                  onPress={() =>
-                    status.isPlaying
-                      ? videoRef.current.pauseAsync()
-                      : videoRef.current.playAsync()
-                  }
-                />
-              </View>
+            <View style={styles.videoPlaceholder}>
+              <Text>Video playback is temporarily disabled.</Text>
             </View>
           ) : (
             <Image source={{ uri: item }} style={styles.mediaContent} />
@@ -255,6 +237,15 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginRight: 10,
     resizeMode: 'stretch',
+  },
+  videoPlaceholder: {
+    width: 320,
+    height: 350,
+    borderRadius: 10,
+    marginRight: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ececec',
   },
   buttons: {
     marginTop: 10,

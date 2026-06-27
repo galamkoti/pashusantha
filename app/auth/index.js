@@ -8,7 +8,7 @@ const index = () => {
   const {translations}= useLanguage();
   return (
     <SafeAreaView style={styles.mainContainer}>
-        <Image source={require("../../assets/logo.jpg")} style={styles.logo} />
+        <Image source={require("../../assets/farm-animals-amico.png")} style={styles.logo} />
       {/* <Text style={styles.headerText}>Login Methods</Text> */}
       <TouchableOpacity style={styles.buttonBox} onPress={()=>router.push("auth/phonelogin")}>
         <Text style={styles.buttonText}>{translations.login_with_mobile||"Login With Phone Number"}</Text>
