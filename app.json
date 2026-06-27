@@ -13,11 +13,6 @@
     "icon": "./assets/farm-animals-amico.png",
     "userInterfaceStyle": "light",
     "scheme": "vikrai",
-    "splash": {
-      "image": "./assets/farm-animals-amico.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "ios": {
       "supportsTablet": true
     },
